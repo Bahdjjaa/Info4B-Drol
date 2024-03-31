@@ -6,8 +6,10 @@ package inputs;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
+import gamestates.Gamestate;
 import main.GamePanel;
-import static utils.Constent.Directions.*;
+import static utils.Constantes.Directions.*;
 
 /**
  *
@@ -27,34 +29,32 @@ public class KeyboardInputs implements KeyListener{
 
     @Override
     public void keyPressed(KeyEvent ke) {
-        switch(ke.getKeyCode()){
-            case KeyEvent.VK_A:
-                this.gamePanel.getGame().getJoueur().setDirection(UP);
-                break;
-            case KeyEvent.VK_S:
-                this.gamePanel.getGame().getJoueur().setDirection(LEFT);
-                break;
-            case KeyEvent.VK_D:
-                this.gamePanel.getGame().getJoueur().setDirection(RIGHT);
-                break;
-            case KeyEvent.VK_W:
-                this.gamePanel.getGame().getJoueur().setDirection(DOWN);
-                break;
-        
-        }
+    	switch(Gamestate.state) {
+		case MENU:
+			gamePanel.getGame().getMenu().keyPressed(ke);
+			break;
+		case PLAYING:
+			gamePanel.getGame().getPlaying().keyPressed(ke);
+			break;
+		default:
+			break;
+         
+         }
     }
 
     @Override
     public void keyReleased(KeyEvent ke) {
-         switch(ke.getKeyCode()){
-            case KeyEvent.VK_A:
-            case KeyEvent.VK_S:     
-            case KeyEvent.VK_D:  
-            case KeyEvent.VK_W:
-                this.gamePanel.getGame().getJoueur().setMoving(false);
-                break;
-        
-        }
+        switch(Gamestate.state) {
+		case MENU:
+			gamePanel.getGame().getMenu().keyReleased(ke);
+			break;
+		case PLAYING:
+			gamePanel.getGame().getPlaying().keyReleased(ke);
+			break;
+		default:
+			break;
+         
+         }
     }
     
     

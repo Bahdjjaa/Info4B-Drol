@@ -4,8 +4,14 @@
  */
 package main;
 
-import entities.Joueur;
+
+import gamestates.Gamestate;
+import gamestates.Menu;
+import gamestates.Playing;
+import utils.LoadSave;
+
 import java.awt.Graphics;
+
 
 /**
  *
@@ -19,10 +25,21 @@ public class Game implements Runnable {
     private final int FPS_SET = 120; //Le nombre de frames dessinés par seconde
     private final int UPS_SET = 200;
     
-    private Joueur joueur;
-            
-            
+    private Playing playing;
+    private Menu menu;
+    
+    public final static int TILES_DEFAULT_SIZE = 32;
+    public final static float SCALE = 2f;
+    public final static int TILES_IN_WIDTH = 26; //Visible size but not the actual size of the level
+    public final static int TILES_IN_HEIGHT = 14;
+    public final static int TILES_SIZE = (int)(TILES_DEFAULT_SIZE * SCALE);
+    public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
+    public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
+
+    
+    
     public Game(){
+    	
         initClasses();
         
         this.gamePanel = new GamePanel(this);
@@ -39,19 +56,56 @@ public class Game implements Runnable {
     }
     
     private void update() {
-        joueur.update();
+   
+        switch(Gamestate.state) {
+		case MENU:
+			menu.update();
+			break;
+		case PLAYING:
+			playing.update();
+			break;
+		case OPTIONS:	
+		case QUIT:		
+		default:
+			System.exit(0);
+			break;
+        	
+        }
     }
     
     public void render(Graphics g){
-        joueur.render(g);
+    	 switch(Gamestate.state) {
+ 		case MENU:
+ 			menu.draw(g);
+ 			break;
+ 		case PLAYING:
+ 			playing.draw(g);
+ 			break;
+ 		default:
+ 			break;
+         	
+         }
     }
     
     private void initClasses() {
-       joueur = new Joueur(200, 200);
+    	menu = new Menu(this);
+    	playing = new Playing(this);
+       
     }
     
-    public Joueur getJoueur(){
-        return this.joueur;
+ 
+    public void windowFocusLost() {
+		if(Gamestate.state == Gamestate.PLAYING)
+			playing.getJoueur().resetDirBooleans();
+		
+	}
+    
+    public Menu getMenu() {
+    	return menu;
+    }
+    
+    public Playing getPlaying() {
+    	return playing;
     }
     
 
@@ -106,6 +160,8 @@ public class Game implements Runnable {
             }     
         }
     }
+
+	
 
     
 }
