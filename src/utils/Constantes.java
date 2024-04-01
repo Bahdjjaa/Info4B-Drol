@@ -12,6 +12,47 @@ import main.Game;
  */
 public class Constantes {
 	
+	public static final float GRAVITE = 0.04f * Game.SCALE;
+	public static final int VITESSE_ANIMATION = 25;
+	
+	public static class ObjetsConstantes{
+		public static final int TRAPE = 0;
+		
+		public static final int TRAPE_WIDTH_DEFAULT = 78;
+		public static final int TRAPE_HEIGHT_DEFAULT = 58;
+		
+		public static final int TRAPE_WIDTH = (int)(TRAPE_WIDTH_DEFAULT * Game.SCALE);
+		public static final int TRAPE_HEIGHT = (int)(TRAPE_HEIGHT_DEFAULT * Game.SCALE);
+		
+		public static int GetSpriteAmount(int type) {
+			switch(type) {
+			case TRAPE:
+				return 1;
+			}
+			return 0;
+		}
+	}
+	
+	public static class EquipageConstantes{
+		public static final int ROI = 0;
+		
+		public static final int ROI_WIDTH_DEFAULT = 78;
+		public static final int ROI_HEIGHT_DEFAULT = 58;
+		
+		public static final int ROI_WIDTH = (int)(ROI_WIDTH_DEFAULT * Game.SCALE);
+		public static final int ROI_HEIGHT = (int)(ROI_HEIGHT_DEFAULT * Game.SCALE);
+		
+		
+		public static int GetSpriteAmount(int type) {
+			switch(type) {
+			case ROI:
+				return 8;
+			}
+			return 0;
+		}
+		
+	}
+	
 	public static class EnemyConstantes{
 		public static final int CRABBY = 0;
 		public static final int IDLE = 0;

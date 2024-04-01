@@ -21,6 +21,7 @@ import static utils.Constantes.Directions.*;
 import static utils.HelpMethods.*;
 import static utils.Constantes.PlayerConstants.GetSpriteAmount;
 import static utils.Constantes.PlayerConstants.*;
+import static utils.Constantes.*;
 
 /**
  *
@@ -29,21 +30,16 @@ import static utils.Constantes.PlayerConstants.*;
 public class Joueur extends Entity {
     
     private BufferedImage [][] animations;
-    private int tick, index, speed = 25;
-    private int playerAction = IDLE;
     private boolean moving = false, attacking = false;
-    private boolean left, up, right, down, jump;
-    private float vitesseJoueur = 1.0f * Game.SCALE;
+    private boolean left, right, jump;
     private int [][] lvlData;
     private float xDrawOffset = 21 * Game.SCALE;
     private float yDrawOffset = 4 * Game.SCALE;
     
     //Jumping and Gravity
-    private float airSpeed = 0f;
-    private float gravity = 0.04f * Game.SCALE;
-    private float jumpSpeed = -2.25f * Game.SCALE;
+    private float jumpSpeed = -2.75f * Game.SCALE;
     private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
-    private boolean inAir = false;
+    
     
     //Status bar UI
 	private BufferedImage statusBarImg;
@@ -58,12 +54,8 @@ public class Joueur extends Entity {
 	private int healthBarXStart = (int) (34 * Game.SCALE);
 	private int healthBarYStart = (int) (14 * Game.SCALE);
 	
-	private int maxHealth = 100;
-	private int currentHealth = maxHealth;
-	private int healthWidth = healthBarWidth;
 	
-	//Attack box
-	private Rectangle2D.Float attackBox;
+	private int healthWidth = healthBarWidth;
 	
 	
 	//Pour changer la direction du sprite
@@ -78,19 +70,16 @@ public class Joueur extends Entity {
     public Joueur(float x, float y, int width, int height, Playing playing){
         super(x, y, width, height);
         this.playing = playing;
+        this.etat = IDLE;
+        this.maxVie = 100;
+        this.vie = maxVie;
+        this.vitesseMarche = 1.0f * Game.SCALE;
         this.loadAnimations();
-        initHitbox(x, y, (int)(20*Game.SCALE),(int)( 27*Game.SCALE));
+        initHitbox(20,27);
         initAttackBox();
           
     }
-    
-    public void setSpawn(Point spawn) {
-    	x = spawn.x;
-    	y = spawn.y;
-    	
-    	hitbox.x = x;
-    	hitbox.y = y;
-    }
+ 
      
     private void initAttackBox() {
 		attackBox = new Rectangle2D.Float(x, y, (int)(20 * Game.SCALE), (int)(20 * Game.SCALE));
@@ -100,13 +89,17 @@ public class Joueur extends Entity {
 	public void update(){
 		updateHealthBar();
 		
-		if(currentHealth <= 0) {
+		if(vie <= 0) {
 			playing.setGameOver(true);
 			return;
 		}
 
     	updateAttackBox();
     	updatePos();
+    	
+    	if(moving)
+    		checkRescue(hitbox);
+    		
     	if(attacking)
     		checkAttack();
     	
@@ -122,6 +115,11 @@ public class Joueur extends Entity {
 		playing.checkEnemyHit(attackBox);
 		
 	}
+    
+    public void checkRescue(Rectangle2D.Float hitbox) {
+		playing.checkMemberRescue(hitbox);
+	}
+
 
 	private void updateAttackBox() {
 		if(right) {
@@ -134,29 +132,21 @@ public class Joueur extends Entity {
 	}
 
 	private void updateHealthBar() {
-		healthWidth = (int)((currentHealth / (float)maxHealth) * healthBarWidth);
+		healthWidth = (int)((vie / (float)maxVie) * healthBarWidth);
 		
 	}
 
 	public void render(Graphics g, int lvlOffset){
-        g.drawImage(this.animations[this.playerAction][this.index],
+        g.drawImage(this.animations[this.etat][this.index],
         		(int)this.hitbox.x - (int)xDrawOffset - lvlOffset + flipX,
         		(int)this.hitbox.y - (int)yDrawOffset,
         		width*flipW,
         		height,
         		null);
-        //drawHitbox(g, lvlOffset);
-        //drawAttackBox(g, lvlOffset);
         
         drawUI(g);
     }
     
-    private void drawAttackBox(Graphics g, int lvlOffset) {
-		g.setColor(Color.pink);
-		g.drawRect((int) attackBox.x - lvlOffset, (int) attackBox.y, (int) attackBox.width, (int) attackBox.height);
-		
-	}
-
 	private void drawUI(Graphics g) {
 		g.drawImage(statusBarImg, statusBarX, statusBarY, statusBarWidth, statusBarHeight, null);
 		g.setColor(Color.red);
@@ -170,10 +160,10 @@ public class Joueur extends Entity {
     
     private void updateAnimationTick() {
         this.tick++;
-        if(this.tick >= this.speed){
+        if(this.tick >= VITESSE_ANIMATION){
             this.tick = 0; 
             this.index++;
-            if(this.index >= GetSpriteAmount(this.playerAction)){
+            if(this.index >= GetSpriteAmount(this.etat)){
                 this.index = 0;
                 this.attacking = false;
                 this.attackChecked = false;
@@ -183,22 +173,22 @@ public class Joueur extends Entity {
     }
     private void setAnimation() {
     	
-    	int startAni = playerAction;
+    	int startAni = this.etat;
     	
         if(moving)
-            this.playerAction = RUNNING;
+        	this.etat= RUNNING;
         else
-            this.playerAction = IDLE;
+        	this.etat = IDLE;
         
         if(inAir) {
-        	if(airSpeed< 0)
-        		playerAction = JUMP;
+        	if(vitesseAir< 0)
+        		this.etat = JUMP;
         	else
-        		playerAction = FALLING;
+        		this.etat = FALLING;
         }
         
         if(attacking) {
-        	this.playerAction = ATTACK;
+        	this.etat = ATTACK;
         	if(startAni != ATTACK) {
         		index = 1;
         		tick = 0;
@@ -206,7 +196,7 @@ public class Joueur extends Entity {
         	}
         }
         
-        if(startAni != playerAction)
+        if(startAni != this.etat)
         	resetAniTick();
     }
 
@@ -231,12 +221,12 @@ public class Joueur extends Entity {
     	float xSpeed = 0;
     	
     	if(left) {
-    		xSpeed -= vitesseJoueur;
+    		xSpeed -= vitesseMarche;
     		flipX = width;
     		flipW = -1;
     	}
     	if (right) {
-    	  	xSpeed += vitesseJoueur;
+    	  	xSpeed += vitesseMarche;
     	  	flipX = 0;
     	  	flipW = 1;
     	}
@@ -245,17 +235,17 @@ public class Joueur extends Entity {
     			inAir = true;
  
     	if(inAir) {
-    		if(CanMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, lvlData)) {
-    			hitbox.y += airSpeed;
-    			airSpeed += gravity;
+    		if(CanMoveHere(hitbox.x, hitbox.y + vitesseAir, hitbox.width, hitbox.height, lvlData)) {
+    			hitbox.y += vitesseAir;
+    			vitesseAir += GRAVITE;
     			updateXPos(xSpeed);
     		}
     		else {
-    			hitbox.y = GetEntityYPosUnderRoofOrAboveFloor(hitbox, airSpeed);
-    			if(airSpeed > 0) {
+    			hitbox.y = GetEntityYPosUnderRoofOrAboveFloor(hitbox, vitesseAir);
+    			if(vitesseAir > 0) {
     				resetInAir();
     			}else {
-    				airSpeed = this.fallSpeedAfterCollision;
+    				vitesseAir = this.fallSpeedAfterCollision;
     			}
     			updateXPos(xSpeed);
     		}
@@ -270,12 +260,12 @@ public class Joueur extends Entity {
 		if(inAir)
 			return;
 		inAir = true;
-		airSpeed = this.jumpSpeed;
+		vitesseAir = this.jumpSpeed;
 	}
 
 	private void resetInAir() {
 		inAir = false;
-		airSpeed = 0;
+		vitesseAir = 0;
 		
 	}
 
@@ -289,13 +279,13 @@ public class Joueur extends Entity {
 	}
 	
 	public void changeHealth(int val) {
-		 currentHealth += val;
-		 if(currentHealth <= 0) {
-			 currentHealth = 0;
+		 vie += val;
+		 if(vie <= 0) {
+			 vie = 0;
 			 // Game Oveerrr
 			 
-		 }else if( currentHealth >= maxHealth) {
-			 currentHealth = maxHealth;
+		 }else if( vie >= maxVie) {
+			 vie = maxVie;
 		 }
 	}
 
@@ -321,8 +311,6 @@ public class Joueur extends Entity {
     public void resetDirBooleans() {
 		this.left = false;
 		this.right = false;
-		this.up = false;
-		this.down = false;
 		
 	}
     
@@ -335,13 +323,6 @@ public class Joueur extends Entity {
 		this.left = left;
 	}
 
-	public boolean isUp() {
-		return up;
-	}
-
-	public void setUp(boolean up) {
-		this.up = up;
-	}
 
 	public boolean isRight() {
 		return right;
@@ -351,13 +332,6 @@ public class Joueur extends Entity {
 		this.right = right;
 	}
 
-	public boolean isDown() {
-		return down;
-	}
-
-	public void setDown(boolean down) {
-		this.down = down;
-	}
 	
 	public void setAttack(boolean a) {
 		this.attacking = a;
@@ -371,8 +345,8 @@ public class Joueur extends Entity {
 		inAir = false;
 		attacking = false;
 		moving = false;
-		playerAction = IDLE;
-		currentHealth = maxHealth;
+		etat = IDLE;
+		vie = maxVie;
 		
 		hitbox.x = x;
 		hitbox.y = y;

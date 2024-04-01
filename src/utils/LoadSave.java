@@ -1,20 +1,13 @@
 package utils;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-
-import entities.Crabby;
-import static utils.Constantes.EnemyConstantes.CRABBY;
-import main.Game;
 
 
 public class LoadSave {
@@ -34,6 +27,11 @@ public class LoadSave {
 	public static final String CRABBY_SPRITE = "../images/crabby_sprite.png";
 	public static final String STATUS_BAR = "../images/health_power_bar.png";
 	public static final String COMPLETED_IMG = "../images/completed_sprite.png";
+	public static final String TRAPE = "../images/trape.png";
+	
+	
+	//Membres à récupérer 
+	public static final String ROI = "../images/king_sprite.png";
 	
 	public static BufferedImage GetSpriteAtlas(String fileName) {
 		BufferedImage img = null;

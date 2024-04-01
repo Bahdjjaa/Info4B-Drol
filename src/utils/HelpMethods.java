@@ -1,15 +1,18 @@
 package utils;
 
 import static utils.Constantes.EnemyConstantes.CRABBY;
+import static utils.Constantes.EquipageConstantes.ROI;
+import static utils.Constantes.ObjetsConstantes.TRAPE;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import entities.Crabby;
+import entities.Roi;
 import main.Game;
+import objets.Trape;
 
 public class HelpMethods {
 	public static boolean CanMoveHere(float x, float y, float width,float height, int[][] lvlData) {
@@ -125,7 +128,7 @@ public class HelpMethods {
 	}
 	
 	public static ArrayList<Crabby> GetCrabs(BufferedImage img){
-		ArrayList<Crabby> list = new ArrayList<Crabby>();
+		ArrayList<Crabby> list = new ArrayList<Crabby>(); 
 		for(int i = 0 ; i < img.getHeight(); i++) {
 			for(int j = 0 ; j < img.getWidth(); j++) {
 				Color color = new Color(img.getRGB(j, i));
@@ -138,17 +141,32 @@ public class HelpMethods {
 		return list;
 	}
 	
-	public static Point GetPlayerSpawn(BufferedImage img) {
+	public static ArrayList<Roi> GetRois(BufferedImage img){
+		ArrayList<Roi> list = new ArrayList<Roi>(); 
 		for(int i = 0 ; i < img.getHeight(); i++) {
 			for(int j = 0 ; j < img.getWidth(); j++) {
 				Color color = new Color(img.getRGB(j, i));
-				int val = color.getGreen();
-				if(val == 100) {
-					return new Point(i*Game.TILES_SIZE, j * Game.TILES_SIZE);
+				int val = color.getBlue();
+				if(val == ROI) {
+					list.add(new Roi(j * Game.TILES_SIZE, i * Game.TILES_SIZE));
 				}
 			}
 		}
-		return new Point(1*Game.TILES_SIZE, 1 * Game.TILES_SIZE);
+		return list;
+	}
+	
+	public static ArrayList<Trape> GetTraps(BufferedImage img){
+		ArrayList<Trape> list = new ArrayList<>();
+		for(int i = 0 ; i < img.getHeight(); i++) {
+			for(int j = 0 ; j < img.getWidth(); j++) {
+				Color color = new Color(img.getRGB(j, i));
+				int val = color.getBlue();
+				if(val == TRAPE) {
+					list.add(new Trape(j * Game.TILES_SIZE, i * Game.TILES_SIZE));
+				}
+			}
+		}
+		return list;
 	}
 	
 	

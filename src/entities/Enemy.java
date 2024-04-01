@@ -8,45 +8,40 @@ import java.awt.geom.Rectangle2D;
 import main.Game;
 
 import static utils.Constantes.Directions.*;
+import static utils.Constantes.*;
 
 public abstract class Enemy extends Entity {
 	
-	protected int index, enemyState, enemyType;
-	protected int tick, speed = 25;
+	protected int typeEnemy;
 	protected boolean firstUpdate = true;
-	protected boolean inAir;
-	protected float fallSpeed;
-	protected float gravity = 0.04f * Game.SCALE;
-	protected float walkSpeed = 0.35f * Game.SCALE;
+	
 	protected int walkDir = LEFT;
 	protected int tileY;
 	protected float attackDist = Game.TILES_SIZE;
-	protected int maxHealth;
-	protected int currentHealth;
 	protected boolean active = true;
 	protected boolean attackChecked;
 	
 
 	public Enemy(float x, float y, int width, int height, int enemyType) {
 		super(x, y, width, height);
-		this.enemyType = enemyType;
-		initHitbox(x, y, width, height);
-		maxHealth = GetMaxHealth(enemyType);
-		currentHealth = maxHealth;
+		this.typeEnemy = enemyType;
+		maxVie = GetMaxHealth(enemyType);
+		vie = maxVie;
+		vitesseMarche = 0.35f * Game.SCALE;;
 	}
 	
 	
 	
 	protected void updateAnimationTick() {
 	        this.tick++;
-	        if(this.tick >= this.speed){
+	        if(this.tick >=  VITESSE_ANIMATION){
 	            this.tick = 0; 
 	            this.index++;
-	            if(this.index >= GetSpriteAmount(enemyType, enemyState)){
+	            if(this.index >= GetSpriteAmount(typeEnemy, this.etat)){
 	                this.index = 0;
 	                
-	                switch(enemyState) {
-	                case ATTACK, HIT -> enemyState = IDLE;
+	                switch(this.etat) {
+	                case ATTACK, HIT -> this.etat = IDLE;
 	                case DEAD -> active = false;
 	                }
 	                
@@ -62,12 +57,12 @@ public abstract class Enemy extends Entity {
 	}
 	 
 	protected void updateInAir(int[][] lvlData) {
-		 if(CanMoveHere(hitbox.x, hitbox.y + fallSpeed, hitbox.width, hitbox.height, lvlData)) {
-			 hitbox.y += fallSpeed;
-			 fallSpeed += gravity;
+		 if(CanMoveHere(hitbox.x, hitbox.y + vitesseAir, hitbox.width, hitbox.height, lvlData)) {
+			 hitbox.y += vitesseAir;
+			 vitesseAir += GRAVITE;
 		 }else {
 			 inAir = false;
-			 hitbox.y = GetEntityYPosUnderRoofOrAboveFloor(hitbox, fallSpeed);
+			 hitbox.y = GetEntityYPosUnderRoofOrAboveFloor(hitbox, vitesseAir);
 			 tileY = (int)(hitbox.y / Game.TILES_SIZE);
 		 }
 	}
@@ -76,9 +71,9 @@ public abstract class Enemy extends Entity {
 		 float xSpeed = 0;
 	 		
 	 		if(walkDir == LEFT) {
-	 			xSpeed = -walkSpeed;
+	 			xSpeed = -vitesseMarche;
 	 		}else {
-	 			xSpeed = walkSpeed;
+	 			xSpeed = vitesseMarche;
 	 		}
 	 		
 	 		if(CanMoveHere(hitbox.x + xSpeed, hitbox.y, hitbox.width, hitbox.height, lvlData))
@@ -120,14 +115,14 @@ public abstract class Enemy extends Entity {
 	
 	
 	protected void newState(int enemyState) {
-		this.enemyState = enemyState;
+		this.etat = enemyState;
 		tick = 0 ;
 		index = 0;
 	}
 	
 	public void hurt(int amount) {
-		currentHealth -= amount; //Modified this too
-		if(currentHealth <= 0)
+		vie -= amount; //Modified this too
+		if(vie <= 0)
 			newState(DEAD);
 		else
 			newState(HIT);
@@ -135,27 +130,19 @@ public abstract class Enemy extends Entity {
 	
 	protected void checkEnemyHit(Rectangle2D.Float attackBox, Joueur j) {
 		if(attackBox.intersects(j.hitbox))
-			j.changeHealth(-GetEnemyDamage(enemyType));
+			j.changeHealth(-GetEnemyDamage(typeEnemy));
 		attackChecked = true;
 	}
 	
 	
 	 
-	 void chanegWalkDir() {
+	 private void chanegWalkDir() {
 		if(walkDir == LEFT)
 			walkDir = RIGHT;
 		else
 			walkDir = LEFT;
 	}
-	 
-	public int getAniIndex() {
-		 return this.index;
-	 }
-	 
-	 public int getEnemyState() {
-		 return this.enemyState;
-	 }
-	 
+
 	 public boolean isActive() {
 		 return active;
 	 }

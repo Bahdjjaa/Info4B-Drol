@@ -49,7 +49,6 @@ public class LevelCompletedOverlay {
 	}
 	
 	public void draw(Graphics g) {
-		//g.setColor(new Color(0, 0, 0, 200));
 		g.drawImage(img, bgX, bgY, bgW, bgH, null);
 		next.draw(g);
 		menu.draw(g);

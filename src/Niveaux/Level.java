@@ -1,36 +1,33 @@
 package Niveaux;
 
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import entities.Crabby;
+import entities.Roi;
 import main.Game;
-import utils.LoadSave;
 import static utils.HelpMethods.GetLevelData;
 import static utils.HelpMethods.GetCrabs;
-import static utils.HelpMethods.GetPlayerSpawn;
+import static utils.HelpMethods.GetRois;
+
 
 public class Level {
 	
 	private BufferedImage img;
 	private int[][] lvlData;
 	private ArrayList<Crabby> crabs;
+	private ArrayList<Roi> rois;
     private int lvlTilesWide;
     private int maxTilesOffset;
     private int maxLvlOffsetX;
-    private Point jrSpawn;
+    
     
 	public Level(BufferedImage img) {
 		this.img = img;
 		createLevelData();
-		creayeEnemies();
+		createEnemies();
+		createEquipage();
 		calcLvlOffset();
-		calcPlayerSpawn();
-	}
-	
-	private void calcPlayerSpawn() {
-		jrSpawn = GetPlayerSpawn(img);
 		
 	}
 
@@ -40,7 +37,7 @@ public class Level {
 		maxLvlOffsetX = Game.TILES_SIZE * maxTilesOffset;
 	}
 
-	private void creayeEnemies() {
+	private void createEnemies() {
 		crabs = GetCrabs(img);
 		
 	}
@@ -48,6 +45,10 @@ public class Level {
 	private void createLevelData() {
 		lvlData = GetLevelData(img);
 		
+	}
+
+	private void createEquipage() {
+		rois = GetRois(img);
 	}
 
 	public int getSpriteIndex(int x, int y) {
@@ -66,7 +67,7 @@ public class Level {
 		return crabs;
 	}
 	
-	public Point getPlayerSpawn() {
-		return jrSpawn;
+	public ArrayList<Roi> getRois(){
+		return rois;
 	}
 }

@@ -38,8 +38,8 @@ public class LevelManager {
 				this.levelSprite[index] = img.getSubimage(j * 32, i * 32, 32, 32);		
 			}
 		}
-		
 	}
+	
 
 	public void draw(Graphics g, int lvlOffset) {
 		
@@ -74,6 +74,7 @@ public class LevelManager {
 		game.getPlaying().getEnemyManager().loadEnemies(newLevel);
 		game.getPlaying().getJoueur().loadLvlData(newLevel.getLevelData());
 		game.getPlaying().setMaxLvlOffset(newLevel.getLvlOffset());
+		game.getPlaying().getEquipageManager().loadEquipage(newLevel);
 		
 	}
 	
