@@ -28,6 +28,9 @@ public class LoadSave {
 	public static final String STATUS_BAR = "../images/health_power_bar.png";
 	public static final String COMPLETED_IMG = "../images/completed_sprite.png";
 	public static final String TRAPE = "../images/trape.png";
+	public static final String GAMEOVER_SCREEN = "../images/death_screen.png";
+	public static final String MENU_OPTIONS = "../images/options.png";
+	public static final String MUSIC_BUTTON = "../images/music_button.png";
 	
 	
 	//Membres à récupérer 

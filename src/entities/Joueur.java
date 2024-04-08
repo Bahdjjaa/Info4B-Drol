@@ -72,7 +72,7 @@ public class Joueur extends Entity {
         this.playing = playing;
         this.etat = IDLE;
         this.maxVie = 100;
-        this.vie = maxVie;
+        this.vie = 10;
         this.vitesseMarche = 1.0f * Game.SCALE;
         this.loadAnimations();
         initHitbox(20,27);
@@ -90,7 +90,16 @@ public class Joueur extends Entity {
 		updateHealthBar();
 		
 		if(vie <= 0) {
-			playing.setGameOver(true);
+			if(etat != DEAD) {
+				etat = DEAD;
+				tick = 0; 
+				index = 0;
+				playing.setJoueurMort(true);
+			}else if(index == GetSpriteAmount(DEAD) - 1 && tick >= VITESSE_ANIMATION - 1) {
+				playing.setGameOver(true);
+			}else {
+				updateAnimationTick();
+			}
 			return;
 		}
 

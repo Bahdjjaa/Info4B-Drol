@@ -151,6 +151,14 @@ public class Constantes {
 			public static final int SLIDER_WIDTH = (int)( SLIDER_DEFAULT_WIDTH * Game.SCALE);
 		}
 		
+		public static class AUdioButton{
+			public final static int MBTN_WIDTH_DEFAULT = 140;
+			public final static int MBTN_HEIGHT_DEFAULT = 45;
+			
+			public final static int MBTN_WIDTH =(int)(MBTN_WIDTH_DEFAULT * Game.SCALE);
+			public final static int MBTN_HEIGHT =(int)(MBTN_HEIGHT_DEFAULT * Game.SCALE);
+		}
+		
 		
 	}
 	
