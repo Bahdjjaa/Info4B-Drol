@@ -12,10 +12,12 @@ import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 
 import main.Game;
+import objets.Porte;
 
 public class Crabby extends Enemy{
 	//Attackbox
 	private int attackBoxOffsetX;
+	
 	
 	
 	public Crabby(float x, float y) {

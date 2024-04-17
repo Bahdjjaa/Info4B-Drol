@@ -9,10 +9,13 @@ import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import Niveaux.LevelManager;
+import entities.Enemy;
 import entities.EnemyManager;
 import entities.EquipageManager;
 import entities.Joueur;
 import main.Game;
+import objets.ObjetsManager;
+import objets.Porte;
 import ui.GameOverOverlay;
 import ui.LevelCompletedOverlay;
 import ui.PauseOverlay;
@@ -26,6 +29,8 @@ public class Playing extends state implements Statemethods {
 	    private LevelManager levelManager;
 	    private EnemyManager enemyManager;
 	    private EquipageManager equipageManager;
+	    private ObjetsManager objetsManager;
+	    
 	    private PauseOverlay pauseOverlay;
 	    private GameOverOverlay gameOverOverlay;
 	    private LevelCompletedOverlay levelCompletedOverlay;
@@ -65,8 +70,10 @@ public class Playing extends state implements Statemethods {
 	    }
 	    
 	    private void loadStartLevel() {
+	    	objetsManager.loadObjets(levelManager.getCurrentLevel());
 			enemyManager.loadEnemies(levelManager.getCurrentLevel());
 			equipageManager.loadEquipage(levelManager.getCurrentLevel());
+			
 			
 		}
 
@@ -79,8 +86,9 @@ public class Playing extends state implements Statemethods {
       	    this.levelManager = new LevelManager(game);
       	    this.enemyManager = new EnemyManager(this);
       	    this.equipageManager = new EquipageManager(this);
+      	    this.objetsManager = new ObjetsManager(this);
       	    
-	    	this.joueur = new Joueur(200, 200, (int)(64 * Game.SCALE), (int)(40* Game.SCALE), this);
+	    	this.joueur = new Joueur(200, 175, (int)(64 * Game.SCALE), (int)(40* Game.SCALE), this);
 	    	this.joueur.loadLvlData(this.levelManager.getCurrentLevel().getLevelData());
 	    	
 	    	this.pauseOverlay = new PauseOverlay(this);
@@ -99,6 +107,9 @@ public class Playing extends state implements Statemethods {
 	    
 	    public EquipageManager getEquipageManager() {
 	    	return equipageManager;
+	    }
+	    public ObjetsManager getObjetsManager() {
+	    	return objetsManager;
 	    }
 	    
 	    public void windowFocusLost() {
@@ -127,7 +138,6 @@ public class Playing extends state implements Statemethods {
 				levelCompletedOverlay.update();
 			}else if(gameOver){
 				gameOverOverlay.update();
-				//joueurMort = true;
 			}else if (joueurMort) {
 				joueur.update();
 			}else{
@@ -135,6 +145,7 @@ public class Playing extends state implements Statemethods {
 				this.joueur.update();
 				this.enemyManager.update(this.levelManager.getCurrentLevel().getLevelData(), joueur);
 				this.equipageManager.update(this.levelManager.getCurrentLevel().getLevelData());
+				this.objetsManager.update();
 				checkCloseToBorder();			
 			}
 			
@@ -165,8 +176,11 @@ public class Playing extends state implements Statemethods {
 			drawClouds(g);
 			this.levelManager.draw(g, xLvlOffset);
 			this.joueur.render(g, xLvlOffset);
+			this.objetsManager.draw(g, xLvlOffset);
 			this.enemyManager.draw(g, xLvlOffset);
 			this.equipageManager.draw(g, xLvlOffset);
+			
+			
 			if(paused) {
 				g.setColor(new Color(0,0,0,150));
 				g.fillRect(0, 0, Game.GAME_WIDTH,Game.GAME_HEIGHT);
@@ -213,7 +227,12 @@ public class Playing extends state implements Statemethods {
 		public void checkMemberRescue(Rectangle2D.Float hitbox) {
 			equipageManager.isRescued(hitbox);
 		}
-
+		
+		public void checkPorteTouche(Rectangle2D.Float hitBox) {
+			enemyManager.enemyOut(hitBox);
+			
+		}
+		
 		public void mouseDragged(MouseEvent e) {
 			if(!gameOver)
 				if(paused)
@@ -315,6 +334,7 @@ public class Playing extends state implements Statemethods {
 		public void setJoueurMort(boolean mort) {
 			this.joueurMort = mort;
 		}
+		
 		
 
 }

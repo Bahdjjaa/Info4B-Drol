@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 import main.Game;
-import ui.Options;
+import ui.OptionsAudio;
 import ui.urmButton;
 import utils.LoadSave;
 
@@ -17,14 +17,14 @@ public class OptionsJeu extends state implements Statemethods{
 	private BufferedImage backgroundImg, optionsBackgroundImg;
 	private int bgX, bgY, bgW, bgH;
 	private urmButton menuBtn;
-	private Options options;
+	private OptionsAudio optionsAudio;
 	
 	public OptionsJeu(Game game) {
 		super(game);
 		initBoutons();
 		initImages();
 		
-		options = game.getOptions();
+		optionsAudio = game.getAudioOptions();
 		
 	}
 
@@ -40,14 +40,14 @@ public class OptionsJeu extends state implements Statemethods{
 		optionsBackgroundImg = LoadSave.GetSpriteAtlas(LoadSave.MENU_OPTIONS);
 		bgW = (int)(optionsBackgroundImg.getWidth() * Game.SCALE);
 		bgH = (int)(optionsBackgroundImg.getHeight() * Game.SCALE);
-		bgX = Game.GAME_WIDTH / 2 - this.bgW /2;
-		bgY = 0;
+		bgX = (int)(Game.GAME_WIDTH / 2 - this.bgW/2);
+		bgY = (int)(23 * Game.SCALE);
 	}
 
 	@Override
 	public void update() {
 		menuBtn.update();
-		options.update();
+		optionsAudio.update();
 		
 	}
 
@@ -57,11 +57,11 @@ public class OptionsJeu extends state implements Statemethods{
 		g.drawImage(optionsBackgroundImg, bgX, bgY, bgW, bgH, null);
 
 		menuBtn.draw(g);
-		options.draw(g);
+		optionsAudio.draw(g);
 	}
 
 	public void mouseDragged(MouseEvent e) {
-		options.mouseDragged(e);
+		optionsAudio.mouseDragged(e);
 	}
 	
 	@Override
@@ -69,7 +69,7 @@ public class OptionsJeu extends state implements Statemethods{
 		if(isIn(menuBtn, e))
 			menuBtn.setMousePressed(true);
 		else
-			options.mousePressed(e);
+			optionsAudio.mousePressed(e);
 		
 	}
 
@@ -79,7 +79,7 @@ public class OptionsJeu extends state implements Statemethods{
 			if(menuBtn.isMousePressed())
 				Gamestate.state = Gamestate.MENU;
 			else
-				options.mouseReleased(e);
+				optionsAudio.mouseReleased(e);
 			
 		menuBtn.resetBools();
 		
@@ -91,7 +91,7 @@ public class OptionsJeu extends state implements Statemethods{
 		if(isIn(menuBtn, e))
 			menuBtn.setMouseOver(true);
 		else
-			options.mouseMoved(e);
+			optionsAudio.mouseMoved(e);
 		
 	}
 

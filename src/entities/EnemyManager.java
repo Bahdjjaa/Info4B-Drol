@@ -4,9 +4,13 @@ import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import Niveaux.Level;
 import gamestates.Playing;
+import main.Game;
+import objets.Porte;
 import utils.LoadSave;
 import static utils.Constantes.EnemyConstantes.*;
 
@@ -15,6 +19,10 @@ public class EnemyManager {
 	private Playing playing;
 	private BufferedImage[][] crabbyArr;
 	private ArrayList<Crabby> crabbies = new ArrayList<>();
+	private int nbCrabbies;
+	private static final  int SPAWN_INTERVAL = 5000;
+	
+
 	
 	
 	
@@ -24,7 +32,26 @@ public class EnemyManager {
 	}
 	
 	public void loadEnemies(Level lvl) {
-		crabbies = lvl.getCrabs();
+		ArrayList<Porte> portes = lvl.getPortes();
+		nbCrabbies = lvl.getMaxEnnemies();
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask() {
+			int n = 0;
+			@Override
+			public void run() {
+				
+				if(n < nbCrabbies) {
+					for(Porte p: portes) {
+						float spawnX = p.getHitbox().x;
+						float spawnY = p.getHitbox().y + (int)(p.getyDrawOffset()*1.6);
+						crabbies.add(new Crabby(spawnX, spawnY));
+						n++;
+					}	
+				}else {
+					timer.cancel();
+				}
+			}
+		}, 2000, SPAWN_INTERVAL);
 		
 	}
 
@@ -54,6 +81,17 @@ public class EnemyManager {
 				return;
 			 }
 	}
+	
+	public void enemyOut(Rectangle2D.Float hitBox) {
+		for(Crabby c: crabbies) {
+			if(c.isActive()) {
+				if(hitBox.intersects(c.getHitbox()))
+					c.out();
+					return;
+			}
+		}
+	}
+	
 
 	private void loadEnemyImgs() {
 		this.crabbyArr = new BufferedImage[5][9];

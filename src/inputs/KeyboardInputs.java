@@ -37,7 +37,7 @@ public class KeyboardInputs implements KeyListener{
 			gamePanel.getGame().getPlaying().keyPressed(ke);
 			break;
 		case OPTIONS:
-			gamePanel.getGame().getOptionsJeu().keyReleased(ke);
+			gamePanel.getGame().getOptionsJeu().keyPressed(ke);
 			break;
 		default:
 			break;

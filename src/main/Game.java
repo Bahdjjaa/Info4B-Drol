@@ -9,7 +9,7 @@ import gamestates.Gamestate;
 import gamestates.Menu;
 import gamestates.OptionsJeu;
 import gamestates.Playing;
-import ui.Options;
+import ui.OptionsAudio;
 import utils.LoadSave;
 
 import java.applet.AudioClip;
@@ -31,12 +31,12 @@ public class Game implements Runnable {
     private Playing playing;
     private Menu menu;
     private OptionsJeu optsJeu;
-    private Options options;
+    private OptionsAudio audioOptions;
     
-    public final static int TILES_DEFAULT_SIZE = 32;
+    public final static int TILES_DEFAULT_SIZE = 29;
     public final static float SCALE = 2f;
-    public final static int TILES_IN_WIDTH = 26; //Visible size but not the actual size of the level
-    public final static int TILES_IN_HEIGHT = 14;
+    public final static int TILES_IN_WIDTH = 30; //Visible size but not the actual size of the level
+    public final static int TILES_IN_HEIGHT = 17;
     public final static int TILES_SIZE = (int)(TILES_DEFAULT_SIZE * SCALE);
     public final static int GAME_WIDTH = TILES_SIZE * TILES_IN_WIDTH;
     public final static int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
@@ -97,7 +97,7 @@ public class Game implements Runnable {
     }
     
     private void initClasses() {
-    	options = new Options();
+    	audioOptions = new OptionsAudio();
     	menu = new Menu(this);
     	playing = new Playing(this);
     	optsJeu = new OptionsJeu(this);
@@ -118,8 +118,8 @@ public class Game implements Runnable {
     	return playing;
     }
     
-    public Options getOptions() {
-    	return options;
+    public OptionsAudio getAudioOptions() {
+    	return audioOptions;
     }
     public OptionsJeu getOptionsJeu() {
     	return optsJeu;

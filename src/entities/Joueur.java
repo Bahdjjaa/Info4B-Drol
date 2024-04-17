@@ -37,7 +37,7 @@ public class Joueur extends Entity {
     private float yDrawOffset = 4 * Game.SCALE;
     
     //Jumping and Gravity
-    private float jumpSpeed = -2.75f * Game.SCALE;
+    private float jumpSpeed = -1.75f * Game.SCALE;
     private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
     
     
@@ -72,7 +72,7 @@ public class Joueur extends Entity {
         this.playing = playing;
         this.etat = IDLE;
         this.maxVie = 100;
-        this.vie = 10;
+        this.vie = maxVie;
         this.vitesseMarche = 1.0f * Game.SCALE;
         this.loadAnimations();
         initHitbox(20,27);
@@ -142,7 +142,6 @@ public class Joueur extends Entity {
 
 	private void updateHealthBar() {
 		healthWidth = (int)((vie / (float)maxVie) * healthBarWidth);
-		
 	}
 
 	public void render(Graphics g, int lvlOffset){
@@ -190,7 +189,7 @@ public class Joueur extends Entity {
         	this.etat = IDLE;
         
         if(inAir) {
-        	if(vitesseAir< 0)
+        	if(vitesseAir < 0)
         		this.etat = JUMP;
         	else
         		this.etat = FALLING;
@@ -291,8 +290,7 @@ public class Joueur extends Entity {
 		 vie += val;
 		 if(vie <= 0) {
 			 vie = 0;
-			 // Game Oveerrr
-			 
+
 		 }else if( vie >= maxVie) {
 			 vie = maxVie;
 		 }

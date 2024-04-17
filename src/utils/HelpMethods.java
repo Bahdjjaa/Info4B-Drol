@@ -2,19 +2,27 @@ package utils;
 
 import static utils.Constantes.EnemyConstantes.CRABBY;
 import static utils.Constantes.EquipageConstantes.ROI;
-import static utils.Constantes.ObjetsConstantes.TRAPE;
+import static utils.Constantes.EquipageConstantes.FROG;
+import static utils.Constantes.ObjetsConstantes.PORTE;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import entities.Frog;
 import entities.Crabby;
 import entities.Roi;
 import main.Game;
+import objets.Porte;
 import objets.Trape;
 
 public class HelpMethods {
+	
 	public static boolean CanMoveHere(float x, float y, float width,float height, int[][] lvlData) {
 		if(!isSolid(x, y, lvlData))
 			if(!isSolid(x+width, y+height, lvlData))
@@ -127,9 +135,9 @@ public class HelpMethods {
 		return lvlData;
 	}
 	
-	public static ArrayList<Crabby> GetCrabs(BufferedImage img){
+	/*public static ArrayList<Crabby> GetCrabs(BufferedImage img){
 		ArrayList<Crabby> list = new ArrayList<Crabby>(); 
-		for(int i = 0 ; i < img.getHeight(); i++) {
+		/*for(int i = 0 ; i < img.getHeight(); i++) {
 			for(int j = 0 ; j < img.getWidth(); j++) {
 				Color color = new Color(img.getRGB(j, i));
 				int val = color.getGreen();
@@ -138,8 +146,9 @@ public class HelpMethods {
 				}
 			}
 		}
+		
 		return list;
-	}
+	}*/
 	
 	public static ArrayList<Roi> GetRois(BufferedImage img){
 		ArrayList<Roi> list = new ArrayList<Roi>(); 
@@ -155,7 +164,56 @@ public class HelpMethods {
 		return list;
 	}
 	
-	public static ArrayList<Trape> GetTraps(BufferedImage img){
+	public static ArrayList<Frog> GetFrogs(BufferedImage img){
+		ArrayList<Frog> list = new ArrayList<Frog>();
+		for(int i = 0 ; i < img.getHeight(); i++) {
+			for(int j = 0 ; j < img.getWidth(); j++) {
+				Color color = new Color(img.getRGB(j, i));
+				int val = color.getBlue();
+				if(val == FROG) {
+					list.add(new Frog(j * Game.TILES_SIZE, i * Game.TILES_SIZE));
+				}
+			}
+		}
+		return list;
+
+	}
+	
+	public static ArrayList<Porte> GetPortes(BufferedImage img){
+		ArrayList<Porte> list = new ArrayList<>();
+		for(int i = 0 ; i < img.getHeight(); i++) {
+			for(int j = 0 ; j < img.getWidth(); j++) {
+				Color color = new Color(img.getRGB(j, i));
+				int val = color.getGreen();
+				if(val == PORTE) {
+					list.add(new Porte(j * Game.TILES_SIZE, i * Game.TILES_SIZE));
+				}
+			}
+		}
+		return list;
+	}
+	
+	
+	/*private static Point GetPoint(BufferedImage img) {
+		Random rnd = new Random();
+		
+		float x = rnd.nextFloat()*(Game.GAME_WIDTH + 1);
+		float y = rnd.nextFloat()*(Game.GAME_HEIGHT + 1);
+		
+		Color color = new Color(img.getRGB((int)x, (int)y));
+		int val = color.getRed();
+		if(val == 11) {
+			
+		}
+		Point pt = new Point();
+		pt.x =(int)x;
+		pt.y = (int)y;
+		
+		return pt;
+	}*/
+	
+	
+	/*public static ArrayList<Trape> GetTraps(BufferedImage img){
 		ArrayList<Trape> list = new ArrayList<>();
 		for(int i = 0 ; i < img.getHeight(); i++) {
 			for(int j = 0 ; j < img.getWidth(); j++) {
@@ -167,7 +225,7 @@ public class HelpMethods {
 			}
 		}
 		return list;
-	}
+	}*/
 	
 	
 	

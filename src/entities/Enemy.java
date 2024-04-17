@@ -5,7 +5,9 @@ import static utils.HelpMethods.*;
 
 import java.awt.geom.Rectangle2D;
 
+import gamestates.Playing;
 import main.Game;
+import objets.Porte;
 
 import static utils.Constantes.Directions.*;
 import static utils.Constantes.*;
@@ -20,6 +22,8 @@ public abstract class Enemy extends Entity {
 	protected float attackDist = Game.TILES_SIZE;
 	protected boolean active = true;
 	protected boolean attackChecked;
+	protected int nbInter;
+	
 	
 
 	public Enemy(float x, float y, int width, int height, int enemyType) {
@@ -28,6 +32,7 @@ public abstract class Enemy extends Entity {
 		maxVie = GetMaxHealth(enemyType);
 		vie = maxVie;
 		vitesseMarche = 0.35f * Game.SCALE;;
+		nbInter = 0;
 	}
 	
 	
@@ -84,8 +89,10 @@ public abstract class Enemy extends Entity {
 	 		
 	 		chanegWalkDir();
 	}
-	 
-	 protected boolean canSeePlayer(int[][] lvlData, Joueur joueur) {
+
+
+
+	protected boolean canSeePlayer(int[][] lvlData, Joueur joueur) {
 		int joueurTileY =(int)(joueur.getHitbox().y / Game.TILES_SIZE);
 		if(joueurTileY == tileY)
 			if(isJoueurInRange(joueur))
@@ -128,12 +135,17 @@ public abstract class Enemy extends Entity {
 			newState(HIT);
 	}
 	
+	public void out() {
+		nbInter++;
+		if(nbInter >= 90)
+			active = false;
+	}
+	
 	protected void checkEnemyHit(Rectangle2D.Float attackBox, Joueur j) {
 		if(attackBox.intersects(j.hitbox))
 			j.changeHealth(-GetEnemyDamage(typeEnemy));
 		attackChecked = true;
 	}
-	
 	
 	 
 	 private void chanegWalkDir() {
@@ -147,7 +159,4 @@ public abstract class Enemy extends Entity {
 		 return active;
 	 }
 	 
-	 
-	 
-
 }

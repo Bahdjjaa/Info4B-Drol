@@ -25,8 +25,11 @@ public class LevelManager {
 	
 	private void buildAllLevels() {
 		BufferedImage[] allLevels = LoadSave.GetAllLevels();
-		for(BufferedImage img: allLevels)
-			levels.add(new Level(img));
+		int n = 0;
+		for(BufferedImage img: allLevels) {
+			n++;
+			levels.add(new Level(img, n));
+		}
 	}
 
 	private void importOutsideSprites() {
@@ -71,10 +74,12 @@ public class LevelManager {
 		}
 		
 		Level newLevel = levels.get(lvlIndex);
+		game.getPlaying().getObjetsManager().loadObjets(newLevel);
 		game.getPlaying().getEnemyManager().loadEnemies(newLevel);
 		game.getPlaying().getJoueur().loadLvlData(newLevel.getLevelData());
 		game.getPlaying().setMaxLvlOffset(newLevel.getLvlOffset());
 		game.getPlaying().getEquipageManager().loadEquipage(newLevel);
+		
 		
 	}
 	
