@@ -33,7 +33,7 @@ public class Window{
 
 			@Override
 			public void windowLostFocus(WindowEvent e) {
-				gp.getGame().windowFocusLost();
+				gp.getGame().getPlaying().windowFocusLost();
 				
 			}
         	

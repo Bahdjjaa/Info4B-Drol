@@ -25,10 +25,10 @@ public class LevelManager {
 	
 	private void buildAllLevels() {
 		BufferedImage[] allLevels = LoadSave.GetAllLevels();
-		int n = 0;
+		//int n = 0;
 		for(BufferedImage img: allLevels) {
-			n++;
-			levels.add(new Level(img, n));
+			levels.add(new Level(img));
+			//n++;
 		}
 	}
 
@@ -46,12 +46,13 @@ public class LevelManager {
 
 	public void draw(Graphics g, int lvlOffset) {
 		
-		for(int i = 0 ; i < Game.TILES_IN_HEIGHT; i++) {
-			for(int j = 0 ; j < levels.get(lvlIndex).getLevelData()[0].length; j++) {
-				int index = levels.get(lvlIndex).getSpriteIndex(j, i);
-				g.drawImage(levelSprite[index], Game.TILES_SIZE * j - lvlOffset, Game.TILES_SIZE * i, Game.TILES_SIZE, Game.TILES_SIZE, null);
+			for(int i = 0 ; i < Game.TILES_IN_HEIGHT; i++) {
+				for(int j = 0 ; j < levels.get(lvlIndex).getLevelData()[0].length; j++) {
+					int index = levels.get(lvlIndex).getSpriteIndex(j, i);
+					g.drawImage(levelSprite[index], Game.TILES_SIZE * j - lvlOffset, Game.TILES_SIZE * i, Game.TILES_SIZE, Game.TILES_SIZE, null);
+				}
 			}
-		}
+		
 	}
 	
 	public void update() {
@@ -63,6 +64,9 @@ public class LevelManager {
 	}
 	public int getAmountOfLevels() {
 		return levels.size();
+	}
+	public int getLevelIndex() {
+		return lvlIndex;
 	}
 
 	public void loadNextLevel() {
@@ -79,8 +83,7 @@ public class LevelManager {
 		game.getPlaying().getJoueur().loadLvlData(newLevel.getLevelData());
 		game.getPlaying().setMaxLvlOffset(newLevel.getLvlOffset());
 		game.getPlaying().getEquipageManager().loadEquipage(newLevel);
-		
-		
+
 	}
 	
 	

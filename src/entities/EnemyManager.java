@@ -18,9 +18,9 @@ public class EnemyManager {
 	
 	private Playing playing;
 	private BufferedImage[][] crabbyArr;
-	private ArrayList<Crabby> crabbies = new ArrayList<>();
+	private ArrayList<Crabby> crabbies;
 	private int nbCrabbies;
-	private static final  int SPAWN_INTERVAL = 5000;
+	private static final  int SPAWN_INTERVAL = 10000;
 	
 
 	
@@ -28,28 +28,29 @@ public class EnemyManager {
 	
 	public EnemyManager(Playing playing) {
 		this.playing = playing;
+		this.crabbies = new ArrayList<Crabby>();
 		loadEnemyImgs();
 	}
 	
 	public void loadEnemies(Level lvl) {
+		crabbies.clear();
 		ArrayList<Porte> portes = lvl.getPortes();
-		nbCrabbies = lvl.getMaxEnnemies();
+		//nbCrabbies = lvl.getMaxEnnemies();
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
-			int n = 0;
+			//int n = 0;
 			@Override
-			public void run() {
-				
-				if(n < nbCrabbies) {
-					for(Porte p: portes) {
-						float spawnX = p.getHitbox().x;
-						float spawnY = p.getHitbox().y + (int)(p.getyDrawOffset()*1.6);
-						crabbies.add(new Crabby(spawnX, spawnY));
-						n++;
-					}	
-				}else {
-					timer.cancel();
-				}
+			public void run() {	
+				for(Porte p: portes) {
+					/*if(n >= nbCrabbies) {
+						timer.cancel();
+						return;
+					}*/
+					float spawnX = p.getHitbox().x;
+					float spawnY = p.getHitbox().y + (int)(p.getyDrawOffset()*1.6);
+					crabbies.add(new Crabby(spawnX, spawnY));
+					//n++;
+				}	
 			}
 		}, 2000, SPAWN_INTERVAL);
 		
@@ -84,11 +85,9 @@ public class EnemyManager {
 	
 	public void enemyOut(Rectangle2D.Float hitBox) {
 		for(Crabby c: crabbies) {
-			if(c.isActive()) {
+			if(c.isActive()) 
 				if(hitBox.intersects(c.getHitbox()))
 					c.out();
-					return;
-			}
 		}
 	}
 	

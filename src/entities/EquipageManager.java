@@ -71,7 +71,7 @@ public class EquipageManager {
 	public void isRescued(Rectangle2D.Float hitBox){
 		for(Roi r : rois) {
 			if(r.isActive())
-				if(hitBox.intersects(r.hitbox)) {
+				if(r.hitbox.intersects(hitBox)) {
 					r.setActive(false);
 					return;
 				}

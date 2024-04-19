@@ -11,6 +11,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
+
 import javax.imageio.ImageIO;
 
 import gamestates.Playing;
@@ -27,9 +29,10 @@ import static utils.Constantes.*;
  *
  * @author bahdjjaa
  */
-public class Joueur extends Entity {
+public class Joueur extends Entity implements Serializable{
     
-    private BufferedImage [][] animations;
+    private static final long serialVersionUID = 1L;
+	private BufferedImage [][] animations;
     private boolean moving = false, attacking = false;
     private boolean left, right, jump;
     private int [][] lvlData;
@@ -64,6 +67,8 @@ public class Joueur extends Entity {
 	
 	private boolean attackChecked = false;
 	private Playing playing;
+	
+	private boolean mort = false;
 	
     
     
@@ -354,12 +359,22 @@ public class Joueur extends Entity {
 		moving = false;
 		etat = IDLE;
 		vie = maxVie;
-		
+		mort = false;
 		hitbox.x = x;
 		hitbox.y = y;
 		if(!IsEntityOnFloor(hitbox, lvlData))
 			inAir = true;
 		
+	}
+
+
+	public boolean estMort() {
+		return mort;
+	}
+
+
+	public void setMort(boolean mort) {
+		this.mort = mort;
 	}
 
 }

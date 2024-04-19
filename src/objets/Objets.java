@@ -13,7 +13,7 @@ public class Objets {
 	
 	protected int x, y, type;
 	protected Rectangle2D.Float hitbox;
-	protected boolean animate, active = true;
+	protected boolean animate, active;
 	protected int tick, index;
 	protected int xDrawOffset, yDrawOffset;
 

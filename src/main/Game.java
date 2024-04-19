@@ -9,11 +9,15 @@ import gamestates.Gamestate;
 import gamestates.Menu;
 import gamestates.OptionsJeu;
 import gamestates.Playing;
+import modesjeu.Mode;
+import modesjeu.Modejeu;
 import ui.OptionsAudio;
 import utils.LoadSave;
 
-import java.applet.AudioClip;
 import java.awt.Graphics;
+
+import Network.ServeurCentral;
+import audios.AudioManager;
 
 
 /**
@@ -32,6 +36,7 @@ public class Game implements Runnable {
     private Menu menu;
     private OptionsJeu optsJeu;
     private OptionsAudio audioOptions;
+    private AudioManager audioManager;
     
     public final static int TILES_DEFAULT_SIZE = 29;
     public final static float SCALE = 2f;
@@ -80,13 +85,15 @@ public class Game implements Runnable {
         }
     }
     
-    public void render(Graphics g){
-    	 switch(Gamestate.state) {
+    
+
+	public void render(Graphics g){
+    	switch(Gamestate.state) {
  		case MENU:
  			menu.draw(g);
  			break;
  		case PLAYING:
- 			playing.draw(g);
+				playing.draw(g);
  			break;
  		case OPTIONS:
  			optsJeu.draw(g);
@@ -97,18 +104,13 @@ public class Game implements Runnable {
     }
     
     private void initClasses() {
-    	audioOptions = new OptionsAudio();
+    	audioOptions = new OptionsAudio(this);
+    	audioManager = new AudioManager();
     	menu = new Menu(this);
     	playing = new Playing(this);
     	optsJeu = new OptionsJeu(this);
     }
-    
- 
-    public void windowFocusLost() {
-		if(Gamestate.state == Gamestate.PLAYING)
-			playing.getJoueur().resetDirBooleans();
-		
-	}
+   
     
     public Menu getMenu() {
     	return menu;
@@ -124,6 +126,11 @@ public class Game implements Runnable {
     public OptionsJeu getOptionsJeu() {
     	return optsJeu;
     }
+    public AudioManager getAudioManager() {
+    	return audioManager;
+    }
+    
+    
     
 
     @Override

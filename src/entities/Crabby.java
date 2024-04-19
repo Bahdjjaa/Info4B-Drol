@@ -105,6 +105,7 @@ public class Crabby extends Enemy{
 		newState(IDLE);
 		active = true;
 		vitesseAir = 0;
+		nbInter = 0;
 	}
 
 }

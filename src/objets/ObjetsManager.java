@@ -31,6 +31,7 @@ public class ObjetsManager {
 
 	
 	public void loadObjets(Level lvl) {
+		portes.clear();
 		portes = lvl.getPortes();
 	}
 
@@ -40,25 +41,20 @@ public class ObjetsManager {
 	
 	public void update() {
 		for(Porte p: portes) {
-			if(p.isActive()) {
 				p.update();
 				checkPorteTouche(p.getHitbox());
-			}
 		}
 	}
 	
 	
 	private void drawPortes(Graphics g, int xLvlOffset) {
 		for(Porte p: portes) {
-			if(p.isActive()) {
 				g.drawImage(porte,
 						(int)p.getHitbox().x - (int)p.getxDrawOffset() - xLvlOffset,
 						(int)p.getHitbox().y - (int)p.getyDrawOffset(),
 						PORTE_WIDTH ,
 						PORTE_HEIGHT,
 						null);
-				//p.drawHitbox(g, xLvlOffset);
-			}
 			
 		}
 	}

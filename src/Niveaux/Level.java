@@ -18,7 +18,7 @@ import static utils.HelpMethods.GetPortes;
 
 public class Level {
 	
-	private int numLevel;
+	//private int numLevel;
 	private BufferedImage img;
 	private int[][] lvlData;
 	private ArrayList<Roi> rois;
@@ -27,18 +27,19 @@ public class Level {
     private int lvlTilesWide;
     private int maxTilesOffset;
     private int maxLvlOffsetX;
-    private int maxEnnemies;
+ 
+    //private int nbEnnemies;
 
     
     
-	public Level(BufferedImage img, int nLvl) {
+	public Level(BufferedImage img) {
 		this.img = img;
-		this.numLevel = nLvl;
+		//this.numLevel = numLvl;
 		createLevelData();
 		createEquipage();
 		createObjets();
 		calcLvlOffset();
-		calcNbEnnemies();
+		//calcNbEnnemies();
 		
 		
 	}
@@ -49,9 +50,9 @@ public class Level {
 		maxLvlOffsetX = Game.TILES_SIZE * maxTilesOffset;
 	}
 	
-	private void calcNbEnnemies() {
-		this.maxEnnemies = 10 * this.numLevel;
-	}
+	/*private void calcNbEnnemies() {
+		this.nbEnnemies = 10 + this.numLevel*5;
+	}*/
 
 	private void createLevelData() {
 		lvlData = GetLevelData(img);
@@ -91,7 +92,8 @@ public class Level {
 	public ArrayList<Porte> getPortes(){
 		return portes;
 	}
-	public int getMaxEnnemies() {
-		return maxEnnemies;
-	}
+	/*public int getMaxEnnemies() {
+		return nbEnnemies;
+	}*/
+
 }

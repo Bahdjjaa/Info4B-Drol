@@ -137,7 +137,7 @@ public abstract class Enemy extends Entity {
 	
 	public void out() {
 		nbInter++;
-		if(nbInter >= 90)
+		if(nbInter >= 200)
 			active = false;
 	}
 	
