@@ -9,6 +9,7 @@ import gamestates.Gamestate;
 import gamestates.Menu;
 import gamestates.OptionsJeu;
 import gamestates.Playing;
+import modesjeu.Cooperatif;
 import modesjeu.Mode;
 import modesjeu.Modejeu;
 import ui.OptionsAudio;
@@ -16,6 +17,9 @@ import utils.LoadSave;
 
 import java.awt.Graphics;
 
+import javax.swing.JOptionPane;
+
+import Network.ClientJoueur;
 import Network.ServeurCentral;
 import audios.AudioManager;
 
@@ -38,6 +42,12 @@ public class Game implements Runnable {
     private OptionsAudio audioOptions;
     private AudioManager audioManager;
     
+    private ClientJoueur joueurSocket;
+    private ServeurCentral serveurSocket;
+    
+    private boolean running = false;
+ 
+    
     public final static int TILES_DEFAULT_SIZE = 29;
     public final static float SCALE = 2f;
     public final static int TILES_IN_WIDTH = 30; //Visible size but not the actual size of the level
@@ -49,30 +59,44 @@ public class Game implements Runnable {
     
     
     public Game(){
-    	
         initClasses();
         
         this.gamePanel = new GamePanel(this);
         this.gwindow = new Window(this.gamePanel);
         this.gamePanel.requestFocus();
         
-        this.startGameLoop();
+        startGameLoop();
+        
+       
       
     }
     
-    private void startGameLoop(){
-        this.gameThread = new Thread(this);
-        this.gameThread.start();
+    public synchronized void startGameLoop() {	
+    	running = true;
+    	this.gameThread = new Thread(this);
+		this.gameThread.start();
+    }
+    
+
+	public synchronized void stopGameLoop() {
+		running = false;
+    	try {
+    		this.gameThread.join();
+    	}catch(InterruptedException e) {
+    		e.printStackTrace();
+    	}
     }
     
     private void update() {
-   
         switch(Gamestate.state) {
 		case MENU:
 			menu.update();
 			break;
 		case PLAYING:
-			playing.update();
+			if(running) {
+				playing.update();
+			}
+			
 			break;
 		case OPTIONS:	
 			optsJeu.update();
@@ -107,8 +131,9 @@ public class Game implements Runnable {
     	audioOptions = new OptionsAudio(this);
     	audioManager = new AudioManager();
     	menu = new Menu(this);
-    	playing = new Playing(this);
     	optsJeu = new OptionsJeu(this);
+    	playing = new Playing(this);
+    	
     }
    
     
@@ -129,11 +154,33 @@ public class Game implements Runnable {
     public AudioManager getAudioManager() {
     	return audioManager;
     }
+    public GamePanel getGamePanel() {
+    	return gamePanel;
+    }
     
-    
-    
+    public boolean getRunning() {
+    	return running;
+    }
 
-    @Override
+    public ClientJoueur getJoueurSocket() {
+		return joueurSocket;
+	}
+    public ServeurCentral getServeurSocket() {
+		return serveurSocket;
+	}
+
+	public void setJoueurSocket(ClientJoueur joueurSocket) {
+		this.joueurSocket = joueurSocket;
+	}
+
+	public void setServeurSocket(ServeurCentral serveurSocket) {
+		this.serveurSocket = serveurSocket;
+	}
+	public void setRunning(boolean running) {
+		this.running = running;
+	}
+
+	@Override
     public void run() {
         
         double timePerFrame = 1000000000.0 / this.FPS_SET;
@@ -154,7 +201,7 @@ public class Game implements Runnable {
             //Get the current Time
             long currentTime = System.nanoTime();
             
-            //To get the lost time (mostly in miliseconds) between each two updates
+            //To get the lost time (mostly in milliseconds) between each two updates
             deltaU += (currentTime - previousTime)/ timePerUpdate;
             
             deltaF += (currentTime - previousTime)/ timePerFrame;
@@ -178,7 +225,7 @@ public class Game implements Runnable {
 
             if(System.currentTimeMillis() - lastCheck >= 1000){
                 lastCheck = System.currentTimeMillis();
-                System.out.println("FPS: "+ frames + " UPS: "+ updates);
+                //System.out.println("FPS: "+ frames + " UPS: "+ updates);
                 frames = 0;
                 updates = 0;
             }     

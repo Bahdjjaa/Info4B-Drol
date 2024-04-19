@@ -2,66 +2,53 @@ package Network;
 import java.io.*;
 import java.net.*;
 
+import main.Game;
+
 public class ClientJoueur extends Thread{
 
 	//Variables client
-	private Socket socket;
-    private ServeurCentral server;
-    private BufferedReader in;
-    private PrintWriter out;
+	private InetAddress ip;
+	private DatagramSocket socket;
+	private Game game;
 	
 	
 	
 	//Constructeur
-	public ClientJoueur(Socket socket, ServeurCentral server) {
-		this.socket = socket;
-        this.server = server;
-        
+	public ClientJoueur(Game game, String ip) {
+		this.game = game;
 		try {
-       
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
-        } catch (IOException e) {
+			this.socket = new DatagramSocket();
+			this.ip = InetAddress.getByName(ip);
+        } catch (SocketException e) {
             e.printStackTrace();
-        }
+        } catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
-	public void sendMessage(String message) {
-        out.println(message);
-    }
-	
-	// Methods to send player actions to the server
-    public void sendMoveLeftCommand() {
-        sendMessage("MOVE_LEFT");
-    }
-
-    public void sendMoveRightCommand() {
-        sendMessage("MOVE_RIGHT");
-    }
-
-    public void sendJumpCommand() {
-        sendMessage("JUMP");
-    }
-
-    public void sendAttackCommand() {
-        sendMessage("ATTACK");
-    }
+	public void envoieData(byte[] data) {
+		DatagramPacket packet = new DatagramPacket(data, data.length, ip, 1331);
+		try {
+			socket.send(packet);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@Override
     public void run() {
-        try {
+        
             while (true) {
-                String message = in.readLine();
-                if (message != null) {
-                    // Handle incoming messages from client
-                    System.out.println("Received from client: " + message);
-                    // Example: server.broadcastMessage(message, this);
+                byte[] data = new byte[1024];
+                DatagramPacket packet = new DatagramPacket(data, data.length);
+                try {
+                	socket.receive(packet);
+                }catch (IOException e) {
+                    e.printStackTrace();
                 }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                System.out.println("SERVER > "+ new String(packet.getData()));
+        } 
     }
 	
 

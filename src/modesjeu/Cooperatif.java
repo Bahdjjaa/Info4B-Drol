@@ -1,10 +1,17 @@
 package modesjeu;
 
+import static utils.Constantes.Environment.BIG_CLOUD_HEIGHT;
+import static utils.Constantes.Environment.BIG_CLOUD_WIDTH;
+import static utils.Constantes.Environment.SMALL_CLOUD_HEIGHT;
+import static utils.Constantes.Environment.SMALL_CLOUD_WIDTH;
+
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+import Network.ClientJoueur;
 import Network.ServeurCentral;
 import entities.Joueur;
 import gamestates.Playing;
@@ -12,39 +19,32 @@ import main.Game;
 
 public class Cooperatif extends Mode implements Modemethods{
 	
-	private ArrayList<Joueur> joueurs;
-	private ServeurCentral server;
-	
-	
-	public Cooperatif(Game game, Playing playing) {
+	private Joueur joueur;
+
+    
+    public Cooperatif(Game game, Playing playing) {
 		super(game, playing);
-		initJoueurs();
+		initClasses();
 	}
 
 
-	private void initJoueurs() {
-		float x = 200;
-		float y = 175;
-		this.joueurs = new ArrayList<Joueur>();
-		for(Joueur j : joueurs) {
-			j = new Joueur(x, y, (int)(64 * Game.SCALE), (int)(40* Game.SCALE), playing);
-			x += 10;
-		}
+
+	private void initClasses() {
+		this.joueur = new Joueur(200, 175, (int)(64 * Game.SCALE), (int)(40* Game.SCALE), playing);
+		this.joueur.loadLvlData(this.levelManager.getCurrentLevel().getLevelData());
 	}
 	
-	public Joueur getJoueur(int index) {
-		return this.joueurs.get(index);
+	
+	
+	public Joueur getJoueur() {
+		return this.joueur;
 	}
 
-	
-	public ArrayList<Joueur> getJoueurs(){
-		return this.joueurs;
-	}
 	
 	public void loadNextLevel() {
-		
+		resetAll();
+    	levelManager.loadNextLevel();
 	}
-
 
 	@Override
 	public void update() {
@@ -54,10 +54,12 @@ public class Cooperatif extends Mode implements Modemethods{
 			levelCompletedOverlay.update();
 		}else if(gameOver){
 			gameOverOverlay.update();
+		}else if (joueur.estMort()) {
+			joueur.update();
 		}else{
 			this.levelManager.update();
-			updateJoueurs();
-			this.enemyManager.update(this.levelManager.getCurrentLevel().getLevelData(), getJoueur(0));
+			this.joueur.update();
+			this.enemyManager.update(this.levelManager.getCurrentLevel().getLevelData(), joueur);
 			this.equipageManager.update(this.levelManager.getCurrentLevel().getLevelData());
 			this.objetsManager.update();
 			checkCloseToBorder();			
@@ -65,8 +67,7 @@ public class Cooperatif extends Mode implements Modemethods{
 	}
 	
 	private void checkCloseToBorder() {
-		for(Joueur j : joueurs) {
-			int playerX = (int)j.getHitbox().x;
+			int playerX = (int)joueur.getHitbox().x;
 			int diff = playerX - xLvlOffset;
 			
 			if(diff > rightBorder)
@@ -80,67 +81,167 @@ public class Cooperatif extends Mode implements Modemethods{
 			
 			else if(xLvlOffset < 0)
 				xLvlOffset = 0;
-		}
+	}
+	
+	public void windowFocusLost() {
+		joueur.resetDirBooleans();
 		
-			
 	}
 
-	private void updateJoueurs() {
-		for(Joueur j: joueurs) {
-			if(j.estMort())
-				j.update();
-			else
-				j.update();
-		}
+	public void resetAll() {
+		gameOver = false;
+		paused = false;
+		levelCompleted = false;
+		joueur.resetAll();
+		enemyManager.resetAllEnemies();
+		equipageManager.resetAllEquipage();
+		
 	}
 
 	@Override
 	public void draw(Graphics g) {
-		// TODO Auto-generated method stub
+		g.drawImage(backgroundImg, 0,0,Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+		drawClouds(g);
+		this.levelManager.draw(g, xLvlOffset);
+		joueur.render(g, xLvlOffset);
+		this.objetsManager.draw(g, xLvlOffset);
+		this.enemyManager.draw(g, xLvlOffset);
+		this.equipageManager.draw(g, xLvlOffset);
 		
+		
+		if(paused) {
+			g.setColor(new Color(0,0,0,150));
+			g.fillRect(0, 0, Game.GAME_WIDTH,Game.GAME_HEIGHT);
+			this.pauseOverlay.draw(g);	
+		}else if(gameOver) {
+			gameOverOverlay.draw(g);
+		}else if(levelCompleted) {
+			g.setColor(new Color(0,0,0,150));
+			g.fillRect(0, 0, Game.GAME_WIDTH,Game.GAME_HEIGHT);
+			levelCompletedOverlay.draw(g);
+		}
+		
+	}
+	
+	private void drawClouds(Graphics g) {
+		for(int i = 0 ; i < 3; i++) {
+			g.drawImage(bigCloud, i * BIG_CLOUD_WIDTH - (int)(xLvlOffset * 0.3), (int)(204 * Game.SCALE), BIG_CLOUD_WIDTH, BIG_CLOUD_HEIGHT, null);
+		}
+		for(int i = 0 ; i < smallCloudsPos.length; i++)
+			g.drawImage(smallCloud, SMALL_CLOUD_WIDTH * 4 * i - (int)(xLvlOffset * 0.7), smallCloudsPos[i], SMALL_CLOUD_WIDTH, SMALL_CLOUD_HEIGHT, null);
+		
+	}
+	public void mouseDragged(MouseEvent e) {
+		if(!gameOver)
+			if(paused)
+		    	pauseOverlay.mouseDragged(e);
 	}
 
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if(!gameOver) {
+			if(e.getButton() == MouseEvent.BUTTON1)
+				joueur.setAttack(true);
+		}
 		
 	}
 
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if(!gameOver) {
+			if(paused)
+				pauseOverlay.mousePressed(e);
+			else if(levelCompleted)
+				levelCompletedOverlay.mousePressed(e);
+		}else {
+			gameOverOverlay.mousePressed(e);
+		}
 		
 	}
 
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if(!gameOver) {
+			if(paused)
+				pauseOverlay.mouseReleased(e);
+			else if(levelCompleted)
+				levelCompletedOverlay.mouseReleased(e);
+		}else {
+			gameOverOverlay.mouseReleased(e);
+		}
 		
 	}
 
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
+		if(!gameOver) {
+			if(paused)
+				pauseOverlay.mouseMoved(e);
+			else if(levelCompleted)
+				levelCompletedOverlay.mouseMoved(e);
+		}else {
+			gameOverOverlay.mouseMoved(e);
+		}
 		
 	}
 
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
+		if(gameOver)
+			gameOverOverlay.keyPressed(e);
+		else {
+			switch(e.getKeyCode()){
+			
+            case KeyEvent.VK_LEFT:
+                joueur.setLeft(true);
+                break;
+                
+            case KeyEvent.VK_RIGHT:
+            	joueur.setRight(true);
+                break;
+                
+            case KeyEvent.VK_SPACE:
+            	joueur.setJump(true);
+            	break;
+            case KeyEvent.VK_ESCAPE:
+            	paused = !paused;
+            	break;
+
+			}
+		}
 		
 	}
 
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
+		if(!gameOver) {
+			switch(e.getKeyCode()){
+            case KeyEvent.VK_LEFT: 
+            	joueur.setLeft(false);
+                break;
+                
+            case KeyEvent.VK_RIGHT:  
+            	joueur.setRight(false);
+                break;
+                
+            case KeyEvent.VK_SPACE:
+            	joueur.setJump(false);
+                break;
+			}
+		}
 		
 	}
+	
+	public void setJoueurMort(boolean mort) {
+		this.joueur.setMort(mort);
+	}
+
 
 	
 	

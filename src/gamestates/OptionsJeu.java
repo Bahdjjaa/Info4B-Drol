@@ -110,16 +110,6 @@ public class OptionsJeu extends state implements Statemethods{
 	public void mousePressed(MouseEvent e) {
 		if(isIn(menuBtn, e))
 			menuBtn.setMousePressed(true);
-		else if(isIn(deuxBtn, e))
-			deuxBtn.setMousePressed(true);
-		else if(isIn(quatreBtn, e))
-			quatreBtn.setMousePressed(true);
-		else if(isIn(sixBtn, e))
-			sixBtn.setMousePressed(true);
-		else if(isIn(soloBtn, e))
-			soloBtn.setMousePressed(true);
-		else if(isIn(combatBtn, e))
-			combatBtn.setMousePressed(true);
 		else
 			optionsAudio.mousePressed(e);
 		
@@ -130,86 +120,10 @@ public class OptionsJeu extends state implements Statemethods{
 		if(isIn(menuBtn, e)) {
 			if(menuBtn.isMousePressed())
 				Gamestate.state = Gamestate.MENU;
-		}else if(isIn(deuxBtn, e)) {
-			if(deuxBtn.isMousePressed()) {
-				boolean ok = deuxBtn.isSelected();
-				deuxBtn.setSelected(!ok);
-				quatreBtn.setSelected(false);
-				sixBtn.setSelected(false);
-				soloBtn.setSelected(false);
-				if(ok) {
-					setNbPlayers(2);
-					Modejeu.mode = Modejeu.COOPERATIF;
-				}
-				else {
-					setNbPlayers(0);
-				}
-	
-			}
-		}else if(isIn(quatreBtn, e)) {
-			if(quatreBtn.isMousePressed()) {
-				boolean ok = quatreBtn.isSelected();
-				quatreBtn.setSelected(!ok);
-				deuxBtn.setSelected(false);
-				sixBtn.setSelected(false);
-				soloBtn.setSelected(false);
-				if(ok) {
-					setNbPlayers(4);
-					Modejeu.mode = Modejeu.COOPERATIF;
-				}
-				else
-					setNbPlayers(0);
-			}
-		}else if(isIn(sixBtn, e)) {
-			if(sixBtn.isMousePressed()) {
-				boolean ok = sixBtn.isSelected();
-				sixBtn.setSelected(!ok);
-				quatreBtn.setSelected(false);
-				deuxBtn.setSelected(false);
-				soloBtn.setSelected(false);
-				if(ok) {
-					setNbPlayers(6);
-					Modejeu.mode = Modejeu.COOPERATIF;
-				}
-				else
-					setNbPlayers(0);
-			}
-		}else if(isIn(soloBtn, e)) {
-			if(soloBtn.isMousePressed()) {
-				boolean ok = soloBtn.isSelected();
-				soloBtn.setSelected(!ok);
-				deuxBtn.setSelected(false);
-				quatreBtn.setSelected(false);
-				sixBtn.setSelected(false);
-				combatBtn.setSelected(false);
-				if(ok) {
-					setNbPlayers(1);
-					Modejeu.mode = Modejeu.SOLO;
-				}
-			}
-		}else if(isIn(combatBtn, e)) {
-			if(combatBtn.isMousePressed()) {
-				boolean ok = combatBtn.isSelected();
-				combatBtn.setSelected(!ok);
-				//deuxBtn.setSelected(false);
-				//quatreBtn.setSelected(false);
-				//sixBtn.setSelected(false);
-				soloBtn.setSelected(false);
-				if(ok) {
-					setNbPlayers(getNbPlayers());
-					Modejeu.mode = Modejeu.SOLO;
-				}
-			}
 		}else
 			optionsAudio.mouseReleased(e);
 			
 		menuBtn.resetBools();
-		deuxBtn.resetBools();
-		quatreBtn.resetBools();
-		sixBtn.resetBools();
-		soloBtn.resetBools();
-		combatBtn.resetBools();
-		
 		
 	}
 
@@ -245,11 +159,90 @@ public class OptionsJeu extends state implements Statemethods{
 			Gamestate.state = Gamestate.MENU;
 		
 	}
-	
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
+		 if(isIn(deuxBtn, e)) {
+				deuxBtn.setMouseClicked(true);
+				boolean ok = deuxBtn.isSelected();
+				if(!ok) {
+					game.setRunning(false);
+					Modejeu.mode = Modejeu.COOPERATIF;
+					setNbPlayers(2);
+					System.out.println("COOPERATIF 2 Joueurs");
+				}
+				System.out.println(nbPlayers);
+				deuxBtn.setSelected(!ok);
+				quatreBtn.setSelected(false);
+				sixBtn.setSelected(false);
+				soloBtn.setSelected(false);
+			}
+			else if(isIn(quatreBtn, e)) {
+				quatreBtn.setMouseClicked(true);
+				boolean ok = quatreBtn.isSelected();
+				if(!ok) {
+					game.setRunning(false);
+					Modejeu.mode = Modejeu.COOPERATIF;
+					setNbPlayers(4);
+					System.out.println("COOPERATIF 4 Joueurs");
+				}
+				System.out.println(nbPlayers);
+				quatreBtn.setSelected(!ok);
+				deuxBtn.setSelected(false);
+				sixBtn.setSelected(false);
+				soloBtn.setSelected(false);
+				
+			}
+			else if(isIn(sixBtn, e)) {
+				sixBtn.setMouseClicked(true);
+				boolean ok = sixBtn.isSelected();
+				if(!ok) {
+					game.setRunning(false);
+					Modejeu.mode = Modejeu.COOPERATIF;	
+					setNbPlayers(6);
+					System.out.println("COOPERATIF 6 Joueurs");
+				}
+				System.out.println(nbPlayers);
+				sixBtn.setSelected(!ok);
+				quatreBtn.setSelected(false);
+				deuxBtn.setSelected(false);
+				soloBtn.setSelected(false);
+				
+			}
+			else if(isIn(soloBtn, e)) {
+				soloBtn.setMouseClicked(true);
+				boolean ok = soloBtn.isSelected();
+				if(!ok) {
+					Modejeu.mode = Modejeu.SOLO;	
+					setNbPlayers(1);
+					System.out.println("SOLO");
+				}
+				
+				System.out.println(nbPlayers);
+				soloBtn.setSelected(!ok);
+				deuxBtn.setSelected(false);
+				quatreBtn.setSelected(false);
+				sixBtn.setSelected(false);
+				combatBtn.setSelected(false);
+				
+			}
+			else if(isIn(combatBtn, e)) {
+				combatBtn.setMouseClicked(true);
+				boolean ok = combatBtn.isSelected();
+				if(!ok) {
+					Modejeu.mode = Modejeu.COMBAT;	
+					//setNbPlayers(6);
+					//TODO : set nb both teams players
+					System.out.println("COMBAT");
+				}
+				combatBtn.setSelected(!ok);
+				deuxBtn.setSelected(false);
+				quatreBtn.setSelected(false);
+				sixBtn.setSelected(false);
+				soloBtn.setSelected(false);
+				
+				
+			}
 		
 	}
 

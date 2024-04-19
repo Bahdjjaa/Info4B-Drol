@@ -26,8 +26,8 @@ public class LevelCompletedOverlay {
 	}
 
 	private void initButtons() {
-		int menuX = (int)(360 * Game.SCALE);
-		int nextX = (int)(475 * Game.SCALE);
+		int menuX = (int)(355 * Game.SCALE);
+		int nextX = (int)(455 * Game.SCALE);
 		int y = (int) (195 * Game.SCALE);
 		
 		next = new urmButton(nextX, y, URM_SIZE, URM_SIZE, 0);

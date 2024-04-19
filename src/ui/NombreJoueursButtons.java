@@ -11,8 +11,8 @@ import utils.LoadSave;
 public class NombreJoueursButtons extends PauseButton{
 	private BufferedImage[] imgs;
 	private int rowIndex,index ;
-	private boolean mouseOver, mousePressed;
-	private boolean selected;
+	private boolean mouseOver, mouseClicked;
+	private boolean selected = false;
 	
 	public NombreJoueursButtons(int x, int y, int w, int h, int rowIndex) {
 		super(x, y, w, h);
@@ -34,7 +34,7 @@ public class NombreJoueursButtons extends PauseButton{
 		index = 0;
 		if(mouseOver)
 			index = 1;
-		if(mousePressed) {
+		if(isSelected()) {
 			index = 2; 
 		}
 			
@@ -47,7 +47,7 @@ public class NombreJoueursButtons extends PauseButton{
 	public void resetBools() {
 		if(!isSelected()) {
 			mouseOver = false;
-			mousePressed = false;
+			mouseClicked = false;
 		}
 		
 	}
@@ -56,8 +56,8 @@ public class NombreJoueursButtons extends PauseButton{
 		return mouseOver;
 	}
 	
-	public boolean isMousePressed() {
-		return mousePressed;
+	public boolean isMouseClicked() {
+		return mouseClicked;
 	}
 	
 	public boolean isSelected() {
@@ -70,8 +70,8 @@ public class NombreJoueursButtons extends PauseButton{
 
 	
 
-	public void setMousePressed(boolean mousePressed) {
-		this.mousePressed = mousePressed;
+	public void setMouseClicked(boolean mouseClicked) {
+		this.mouseClicked = mouseClicked;
 	}
 	
 	public void setSelected(boolean selected) {

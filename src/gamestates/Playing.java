@@ -8,6 +8,9 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
+import javax.swing.JOptionPane;
+
+import Network.ClientJoueur;
 import Network.ServeurCentral;
 import Niveaux.LevelManager;
 import entities.Enemy;
@@ -35,7 +38,6 @@ public class Playing extends state implements Statemethods {
 	    private Solo solo;
 	    private Cooperatif cooperatif;
 	    private Combat combat;
-	    private ServeurCentral server;
 	   
 	   
 	    
@@ -49,15 +51,17 @@ public class Playing extends state implements Statemethods {
 		private void initClasses() {
       	    solo = new Solo(game, this);
       	    cooperatif = new Cooperatif(game, this);
-      	    combat = new Combat(game, this);
-      	    server = new ServeurCentral(1234, 2);
-	       
+      	    combat = new Combat(game, this);       
 	    }
 		
 		public void loadNextLevel() {
 			switch(Modejeu.mode) {
 			case SOLO:
 				solo.loadNextLevel();
+				break;
+			case COOPERATIF:
+				cooperatif.loadNextLevel();
+				break;
 			default:
 				break;
 			}
@@ -67,6 +71,10 @@ public class Playing extends state implements Statemethods {
 			switch(Modejeu.mode) {
 			case SOLO:
 				return solo;
+			case COOPERATIF:
+				return cooperatif;
+			case COMBAT:
+				return combat;
 			default:
 				return null;
 			}
@@ -76,6 +84,8 @@ public class Playing extends state implements Statemethods {
 			switch(Modejeu.mode) {
 			case SOLO:
 				return solo.getJoueur();
+			case COOPERATIF:
+				return cooperatif.getJoueur();
 			default:
 				break;
 			}
@@ -86,6 +96,8 @@ public class Playing extends state implements Statemethods {
 			switch(Modejeu.mode) {
 			case SOLO:
 				return solo.getEnemyManager();
+			case COOPERATIF:
+				return cooperatif.getEnemyManager();
 			default:
 				break;
 			}
@@ -96,6 +108,8 @@ public class Playing extends state implements Statemethods {
 			switch(Modejeu.mode) {
 			case SOLO:
 				return solo.getEquipageManager();
+			case COOPERATIF:
+				return cooperatif.getEquipageManager();
 			default:
 				break;
 			}
@@ -106,6 +120,8 @@ public class Playing extends state implements Statemethods {
 			switch(Modejeu.mode) {
 			case SOLO:
 				return solo.getLevelManager();
+			case COOPERATIF:
+				return cooperatif.getLevelManager();
 			default:
 				break;
 			}
@@ -115,6 +131,8 @@ public class Playing extends state implements Statemethods {
 			switch(Modejeu.mode) {
 			case SOLO:
 				return solo.getObjetsManager();
+			case COOPERATIF:
+				return cooperatif.getObjetsManager();
 			default:
 				break;
 			}
@@ -125,6 +143,9 @@ public class Playing extends state implements Statemethods {
 			switch(Modejeu.mode) {
 			case SOLO:
 				solo.windowFocusLost();
+				break;
+			case COOPERATIF:
+				cooperatif.windowFocusLost();
 				break;
 			default:
 				break;
@@ -137,6 +158,9 @@ public class Playing extends state implements Statemethods {
 			case SOLO:
 				solo.resetAll();
 				break;
+			case COOPERATIF:
+				cooperatif.resetAll();
+				break;
 			default:
 				break;
 			}
@@ -146,6 +170,9 @@ public class Playing extends state implements Statemethods {
 			switch(Modejeu.mode) {
 			case SOLO:
 				solo.setLevelCompleted(b);
+				break;
+			case COOPERATIF:
+				cooperatif.setLevelCompleted(b);
 				break;
 			default:
 				break;
@@ -157,6 +184,9 @@ public class Playing extends state implements Statemethods {
 			case SOLO:
 				solo.setGameOver(gameOver);
 				break;
+			case COOPERATIF:
+				cooperatif.setGameOver(gameOver);
+				break;
 			default:
 				break;
 			}
@@ -167,6 +197,8 @@ public class Playing extends state implements Statemethods {
 			case SOLO:
 				solo.setJoueurMort(mort);
 				break;
+			case COOPERATIF:
+				cooperatif.setJoueurMort(mort);
 			default:
 				break;
 			}
@@ -232,9 +264,6 @@ public class Playing extends state implements Statemethods {
 				solo.update();
 				break;
 			case COOPERATIF:
-				if(!server.isGameStarted()) {
-					server.acceptJoueurs();
-				}
 				cooperatif.update();
 				break;
 			default:
@@ -275,6 +304,9 @@ public class Playing extends state implements Statemethods {
 			case SOLO:
 				solo.mouseClicked(e);
 				break;
+			case COOPERATIF:
+				cooperatif.mouseClicked(e);
+				break;
 			default:
 				break;
 			}
@@ -286,6 +318,9 @@ public class Playing extends state implements Statemethods {
 			case SOLO:
 				solo.mousePressed(e);
 				break;
+			case COOPERATIF:
+				cooperatif.mousePressed(e);
+				break;
 			default:
 				break;
 			}
@@ -296,6 +331,9 @@ public class Playing extends state implements Statemethods {
 			switch (Modejeu.mode) {
 			case SOLO:
 				solo.mouseReleased(e);
+			case COOPERATIF:
+				cooperatif.mouseReleased(e);
+				break;
 			default:
 				break;
 			}
@@ -307,6 +345,9 @@ public class Playing extends state implements Statemethods {
 			case SOLO:
 				solo.mouseMoved(e);
 				break;
+			case COOPERATIF:
+				cooperatif.mouseMoved(e);
+				break;
 			default:
 				break;
 			}
@@ -317,6 +358,9 @@ public class Playing extends state implements Statemethods {
 			switch (Modejeu.mode) {
 			case SOLO:
 				solo.keyPressed(e);
+				break;
+			case COOPERATIF:
+				cooperatif.keyPressed(e);
 				break;
 			default:
 				break;
@@ -331,11 +375,15 @@ public class Playing extends state implements Statemethods {
 			case SOLO:
 				solo.keyReleased(e);
 				break;
+			case COOPERATIF:
+				cooperatif.keyReleased(e);
+				break;
 			default:
 				break;
 			}
 			
 		}
+
 	
 		
 		

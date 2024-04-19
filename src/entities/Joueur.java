@@ -70,6 +70,8 @@ public class Joueur extends Entity implements Serializable{
 	
 	private boolean mort = false;
 	
+	//TODO : ADD A USER NAME
+	
     
     
     public Joueur(float x, float y, int width, int height, Playing playing){

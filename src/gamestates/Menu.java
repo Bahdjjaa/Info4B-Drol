@@ -5,7 +5,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JOptionPane;
+
+import Network.ClientJoueur;
+import Network.ServeurCentral;
 import main.Game;
+import modesjeu.Modejeu;
 import ui.MenuButton;
 import utils.LoadSave;
 
@@ -76,8 +81,20 @@ public class Menu extends state implements Statemethods {
 			if(isIn(e, mb)) {
 				if(mb.isMousePressed())
 					mb.applyGamestate();
-				if(mb.getState() == Gamestate.PLAYING)
+				if(mb.getState() == Gamestate.PLAYING) {
+					if(Modejeu.mode == Modejeu.COOPERATIF) {
+						if(JOptionPane.showConfirmDialog(game.getGamePanel(), "veux tu commencer le serveur ?") == 0) {
+							game.setServeurSocket(new ServeurCentral(game));
+							game.getServeurSocket().start();
+						}
+						game.setJoueurSocket(new ClientJoueur(game, "localhost"));
+						game.getJoueurSocket().start();
+						game.setRunning(true);
+						game.getJoueurSocket().envoieData("ping".getBytes());					}
 					game.getAudioManager().setSonNiveau(game.getPlaying().getLevelManager().getLevelIndex());
+					
+				}
+				
 				break;
 			}
 		}
