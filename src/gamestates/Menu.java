@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 import Network.ClientJoueur;
 import Network.ServeurCentral;
+import Network.packets.Packet00Login;
 import main.Game;
 import modesjeu.Modejeu;
 import ui.MenuButton;
@@ -90,7 +91,10 @@ public class Menu extends state implements Statemethods {
 						game.setJoueurSocket(new ClientJoueur(game, "localhost"));
 						game.getJoueurSocket().start();
 						game.setRunning(true);
-						game.getJoueurSocket().envoieData("ping".getBytes());					}
+						//game.getJoueurSocket().envoieData("ping".getBytes());	
+						Packet00Login loginPacket = new Packet00Login(JOptionPane.showInputDialog(game, "Entre vontre nom"));
+						loginPacket.writeData(game.getJoueurSocket());
+					}
 					game.getAudioManager().setSonNiveau(game.getPlaying().getLevelManager().getLevelIndex());
 					
 				}

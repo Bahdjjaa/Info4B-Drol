@@ -5,6 +5,7 @@
 package entities;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
@@ -29,9 +30,9 @@ import static utils.Constantes.*;
  *
  * @author bahdjjaa
  */
-public class Joueur extends Entity implements Serializable{
+public class Joueur extends Entity{
     
-    private static final long serialVersionUID = 1L;
+    private String username;
 	private BufferedImage [][] animations;
     private boolean moving = false, attacking = false;
     private boolean left, right, jump;
@@ -74,13 +75,14 @@ public class Joueur extends Entity implements Serializable{
 	
     
     
-    public Joueur(float x, float y, int width, int height, Playing playing){
+    public Joueur(float x, float y, int width, int height,String username, Playing playing){
         super(x, y, width, height);
         this.playing = playing;
         this.etat = IDLE;
         this.maxVie = 100;
         this.vie = maxVie;
         this.vitesseMarche = 1.0f * Game.SCALE;
+        this.username = username;
         this.loadAnimations();
         initHitbox(20,27);
         initAttackBox();
@@ -158,7 +160,7 @@ public class Joueur extends Entity implements Serializable{
         		width*flipW,
         		height,
         		null);
-        
+        //Add username above the player.
         drawUI(g);
     }
     
@@ -167,7 +169,24 @@ public class Joueur extends Entity implements Serializable{
 		g.setColor(Color.red);
 		g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
 		
+		if(username != null) {
+			int nameX = (int)(this.hitbox.x - xDrawOffset - (username.length()*3.5) + width /2);
+			int nameY = (int)(this.hitbox.y - yDrawOffset - 20);
+			g.setColor(Color.WHITE);
+			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+			g.drawString(username, nameX, nameY);
+		}
 	}
+
+	public String getUsername() {
+		return username;
+	}
+
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 
 	public void setMoving(boolean moving){
         this.moving = moving;

@@ -10,36 +10,48 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import Network.ClientJoueur;
 import Network.ServeurCentral;
 import entities.Joueur;
+import entities.JoueurCooperatif;
 import gamestates.Playing;
 import main.Game;
 
 public class Cooperatif extends Mode implements Modemethods{
 	
 	private Joueur joueur;
-
+	private ArrayList<JoueurCooperatif> joueurs = new ArrayList<JoueurCooperatif>();
     
     public Cooperatif(Game game, Playing playing) {
 		super(game, playing);
-		initClasses();
+		//initClasses();
 	}
 
 
 
-	private void initClasses() {
-		this.joueur = new Joueur(200, 175, (int)(64 * Game.SCALE), (int)(40* Game.SCALE), playing);
+	/*private void initClasses() {
+		this.joueur = new Joueur(200, 175, (int)(64 * Game.SCALE), (int)(40* Game.SCALE),JOptionPane.showInputDialog(game, "Entrer votre nom"), playing);
 		this.joueur.loadLvlData(this.levelManager.getCurrentLevel().getLevelData());
+	}*/
+	
+	public synchronized ArrayList<JoueurCooperatif> getJoueurs(){
+		return joueurs;
 	}
+
+	public synchronized void ajoutJoueur(JoueurCooperatif joueur) {
+		this.getJoueurs().add(joueur);
+	}
+	
 	
 	
 	
 	public Joueur getJoueur() {
 		return this.joueur;
 	}
-
 	
 	public void loadNextLevel() {
 		resetAll();
@@ -54,20 +66,30 @@ public class Cooperatif extends Mode implements Modemethods{
 			levelCompletedOverlay.update();
 		}else if(gameOver){
 			gameOverOverlay.update();
-		}else if (joueur.estMort()) {
+		}/*else if (joueur.estMort()) {
 			joueur.update();
-		}else{
+		}*/else{
 			this.levelManager.update();
-			this.joueur.update();
-			this.enemyManager.update(this.levelManager.getCurrentLevel().getLevelData(), joueur);
+			//this.joueur.update();
+			updateJoueurs();
+			for(JoueurCooperatif jc : joueurs){
+				this.enemyManager.update(this.levelManager.getCurrentLevel().getLevelData(), jc);
+			}
 			this.equipageManager.update(this.levelManager.getCurrentLevel().getLevelData());
 			this.objetsManager.update();
 			checkCloseToBorder();			
 		}
 	}
 	
+	private void updateJoueurs() {
+		for(JoueurCooperatif jc : joueurs) {
+			jc.update();
+		}
+	}
+	
 	private void checkCloseToBorder() {
-			int playerX = (int)joueur.getHitbox().x;
+		for(JoueurCooperatif jc : joueurs) {
+			int playerX = (int)jc.getHitbox().x;
 			int diff = playerX - xLvlOffset;
 			
 			if(diff > rightBorder)
@@ -81,10 +103,13 @@ public class Cooperatif extends Mode implements Modemethods{
 			
 			else if(xLvlOffset < 0)
 				xLvlOffset = 0;
+		}
 	}
 	
 	public void windowFocusLost() {
-		joueur.resetDirBooleans();
+		//joueur.resetDirBooleans();
+		for(JoueurCooperatif jc: joueurs)
+			jc.resetDirBooleans();
 		
 	}
 
@@ -92,9 +117,11 @@ public class Cooperatif extends Mode implements Modemethods{
 		gameOver = false;
 		paused = false;
 		levelCompleted = false;
-		joueur.resetAll();
+		//joueur.resetAll();
 		enemyManager.resetAllEnemies();
 		equipageManager.resetAllEquipage();
+		for(JoueurCooperatif jc : joueurs)
+			jc.resetAll();
 		
 	}
 
@@ -103,7 +130,8 @@ public class Cooperatif extends Mode implements Modemethods{
 		g.drawImage(backgroundImg, 0,0,Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
 		drawClouds(g);
 		this.levelManager.draw(g, xLvlOffset);
-		joueur.render(g, xLvlOffset);
+		//joueur.render(g, xLvlOffset);
+		renderJoueurs(g);
 		this.objetsManager.draw(g, xLvlOffset);
 		this.enemyManager.draw(g, xLvlOffset);
 		this.equipageManager.draw(g, xLvlOffset);
@@ -121,6 +149,12 @@ public class Cooperatif extends Mode implements Modemethods{
 			levelCompletedOverlay.draw(g);
 		}
 		
+	}
+	
+	private void renderJoueurs(Graphics g) {
+		for(JoueurCooperatif jc : joueurs) {
+			jc.render(g, xLvlOffset);
+		}
 	}
 	
 	private void drawClouds(Graphics g) {
@@ -142,7 +176,8 @@ public class Cooperatif extends Mode implements Modemethods{
 	public void mouseClicked(MouseEvent e) {
 		if(!gameOver) {
 			if(e.getButton() == MouseEvent.BUTTON1)
-				joueur.setAttack(true);
+				for(JoueurCooperatif jc: joueurs)
+					jc.setAttack(true);
 		}
 		
 	}
@@ -198,15 +233,18 @@ public class Cooperatif extends Mode implements Modemethods{
 			switch(e.getKeyCode()){
 			
             case KeyEvent.VK_LEFT:
-                joueur.setLeft(true);
+            	for(JoueurCooperatif jc: joueurs)
+            		jc.setLeft(true);
                 break;
                 
             case KeyEvent.VK_RIGHT:
-            	joueur.setRight(true);
+            	for(JoueurCooperatif jc: joueurs)
+            		jc.setRight(true);
                 break;
                 
             case KeyEvent.VK_SPACE:
-            	joueur.setJump(true);
+            	for(JoueurCooperatif jc: joueurs)
+            		jc.setJump(true);
             	break;
             case KeyEvent.VK_ESCAPE:
             	paused = !paused;
@@ -223,15 +261,18 @@ public class Cooperatif extends Mode implements Modemethods{
 		if(!gameOver) {
 			switch(e.getKeyCode()){
             case KeyEvent.VK_LEFT: 
-            	joueur.setLeft(false);
+            	for(JoueurCooperatif jc: joueurs)
+            		jc.setLeft(false);
                 break;
                 
             case KeyEvent.VK_RIGHT:  
-            	joueur.setRight(false);
+            	for(JoueurCooperatif jc: joueurs)
+            		jc.setRight(false);
                 break;
                 
             case KeyEvent.VK_SPACE:
-            	joueur.setJump(false);
+            	for(JoueurCooperatif jc: joueurs)
+            		jc.setJump(false);
                 break;
 			}
 		}
@@ -239,7 +280,8 @@ public class Cooperatif extends Mode implements Modemethods{
 	}
 	
 	public void setJoueurMort(boolean mort) {
-		this.joueur.setMort(mort);
+		for(JoueurCooperatif jc :  joueurs)
+			jc.setMort(mort);
 	}
 
 

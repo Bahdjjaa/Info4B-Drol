@@ -15,8 +15,10 @@ import Network.ServeurCentral;
 import Niveaux.LevelManager;
 import entities.Enemy;
 import entities.EnemyManager;
+import entities.Entity;
 import entities.EquipageManager;
 import entities.Joueur;
+import entities.JoueurCooperatif;
 import main.Game;
 import modesjeu.Combat;
 import modesjeu.Cooperatif;
@@ -209,6 +211,9 @@ public class Playing extends state implements Statemethods {
 			case SOLO:
 				solo.checkEnemyHit(attackBox);
 				break;
+			case COOPERATIF:
+				cooperatif.checkEnemyHit(attackBox);
+				break;
 			default:
 				break;
 			}
@@ -219,6 +224,9 @@ public class Playing extends state implements Statemethods {
 			case SOLO:
 				solo.checkMemberRescue(hitbox);
 				break;
+			case COOPERATIF:
+				cooperatif.checkMemberRescue(hitbox);
+				break;
 			default:
 				break;
 			}
@@ -228,6 +236,9 @@ public class Playing extends state implements Statemethods {
 			switch(Modejeu.mode) {
 			case SOLO:
 				solo.checkPorteTouche(hitBox);
+				break;
+			case COOPERATIF:
+				cooperatif.checkPorteTouche(hitBox);
 				break;
 			default:
 				break;
@@ -240,6 +251,9 @@ public class Playing extends state implements Statemethods {
 			case SOLO:
 				solo.setMaxLvlOffset(lvlOffset);
 				break;
+			case COOPERATIF:
+				cooperatif.setMaxLvlOffset(lvlOffset);
+				break;
 			default:
 				break;
 			}
@@ -249,6 +263,19 @@ public class Playing extends state implements Statemethods {
 			switch(Modejeu.mode) {
 			case SOLO:
 				solo.unpauseGame();
+				break;
+			case COOPERATIF:
+				cooperatif.unpauseGame();
+				break;
+			default:
+				break;
+			}
+		}
+		
+		public synchronized void ajoutEntity(Entity entity) {
+			switch (Modejeu.mode){
+			case COOPERATIF:
+				cooperatif.ajoutJoueur((JoueurCooperatif)entity);
 				break;
 			default:
 				break;
@@ -291,6 +318,9 @@ public class Playing extends state implements Statemethods {
 			switch (Modejeu.mode) {
 			case SOLO:
 				solo.mouseDragged(e);
+				break;
+			case COOPERATIF:
+				cooperatif.mouseDragged(e);
 				break;
 			default:
 				break;

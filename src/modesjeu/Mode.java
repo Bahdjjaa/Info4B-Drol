@@ -127,8 +127,4 @@ public abstract class Mode{
 		enemyManager.enemyOut(hitBox);
 		
 	}
-	
-	
-	
-	
 }

@@ -9,8 +9,8 @@ public class JoueurCooperatif extends Joueur  {
 	public InetAddress ip;
 	public int port;
 
-	public JoueurCooperatif(float x, float y, int width, int height, Playing playing, InetAddress ip, int port) {
-		super(x, y, width, height, playing);
+	public JoueurCooperatif(float x, float y, int width, int height,String username,Playing playing, InetAddress ip, int port) {
+		super(x, y, width, height,username, playing);
 		this.ip = ip;
 		this.port = port;
 	}

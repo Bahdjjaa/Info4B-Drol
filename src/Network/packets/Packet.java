@@ -25,6 +25,7 @@ public abstract class Packet {
 		this.packetId = (byte) packetId;
 	}
 	
+	public abstract byte[] getData();
 	public abstract void writeData(ClientJoueur joueur);
 	public abstract void writeData(ServeurCentral serveur);
 	
@@ -33,6 +34,14 @@ public abstract class Packet {
 		return message.substring(2);
 	}
 	
+	
+	public static PacketTypes chercherPacket(String id) {
+		try {
+			return chercherPacket(Integer.parseInt(id));
+		}catch(NumberFormatException e) {
+			return PacketTypes.INVLIDE;
+		}
+	}
 	public static PacketTypes chercherPacket(int id) {
 		for(PacketTypes p : PacketTypes.values()){
 			if(p.getId() == id)
