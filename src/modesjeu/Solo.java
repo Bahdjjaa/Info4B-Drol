@@ -29,9 +29,11 @@ public class Solo extends Mode implements Modemethods{
  
 	public Solo(Game game, Playing playing) {
 		super(game, playing);
-		this.joueur = new Joueur(200, 175, (int)(64 * Game.SCALE), (int)(40* Game.SCALE),JOptionPane.showInputDialog(game, "Entrer votre nom"), playing);
-    	this.joueur.loadLvlData(this.levelManager.getCurrentLevel().getLevelData());
-		
+		 this.joueur = new Joueur(200, 175, (int)(64 * Game.SCALE), (int)(40* Game.SCALE),"player", playing);
+	}
+	
+	public void setJoueur(Joueur joueur) {
+		this.joueur = joueur;
 	}
 	
 	public Joueur getJoueur(){

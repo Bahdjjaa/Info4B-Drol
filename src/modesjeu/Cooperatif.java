@@ -89,20 +89,22 @@ public class Cooperatif extends Mode implements Modemethods{
 	
 	private void checkCloseToBorder() {
 		for(JoueurCooperatif jc : joueurs) {
-			int playerX = (int)jc.getHitbox().x;
-			int diff = playerX - xLvlOffset;
-			
-			if(diff > rightBorder)
-				xLvlOffset += diff - rightBorder;
-			
-			else if (diff < leftBorder)
-				xLvlOffset += diff - leftBorder;
-			
-			if(xLvlOffset > maxLvlOffsetX)
-				xLvlOffset = maxLvlOffsetX;
-			
-			else if(xLvlOffset < 0)
-				xLvlOffset = 0;
+			if(jc.estJoueurLocal()) {
+				int playerX = (int)jc.getHitbox().x;
+				int diff = playerX - xLvlOffset;
+				
+				if(diff > rightBorder)
+					xLvlOffset += diff - rightBorder;
+				
+				else if (diff < leftBorder)
+					xLvlOffset += diff - leftBorder;
+				
+				if(xLvlOffset > maxLvlOffsetX)
+					xLvlOffset = maxLvlOffsetX;
+				
+				else if(xLvlOffset < 0)
+					xLvlOffset = 0;
+			}			
 		}
 	}
 	
@@ -130,7 +132,6 @@ public class Cooperatif extends Mode implements Modemethods{
 		g.drawImage(backgroundImg, 0,0,Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
 		drawClouds(g);
 		this.levelManager.draw(g, xLvlOffset);
-		//joueur.render(g, xLvlOffset);
 		renderJoueurs(g);
 		this.objetsManager.draw(g, xLvlOffset);
 		this.enemyManager.draw(g, xLvlOffset);
@@ -151,9 +152,9 @@ public class Cooperatif extends Mode implements Modemethods{
 		
 	}
 	
-	private void renderJoueurs(Graphics g) {
+	private synchronized void renderJoueurs(Graphics g) {
 		for(JoueurCooperatif jc : joueurs) {
-			jc.render(g, xLvlOffset);
+				jc.render(g, xLvlOffset);
 		}
 	}
 	
@@ -177,7 +178,8 @@ public class Cooperatif extends Mode implements Modemethods{
 		if(!gameOver) {
 			if(e.getButton() == MouseEvent.BUTTON1)
 				for(JoueurCooperatif jc: joueurs)
-					jc.setAttack(true);
+					if(jc.estJoueurLocal())
+						jc.setAttack(true);
 		}
 		
 	}
@@ -230,26 +232,26 @@ public class Cooperatif extends Mode implements Modemethods{
 		if(gameOver)
 			gameOverOverlay.keyPressed(e);
 		else {
-			switch(e.getKeyCode()){
+			for(JoueurCooperatif jc: joueurs) {
+				if(jc.estJoueurLocal()) {
+					switch(e.getKeyCode()){
 			
-            case KeyEvent.VK_LEFT:
-            	for(JoueurCooperatif jc: joueurs)
-            		jc.setLeft(true);
-                break;
+					case KeyEvent.VK_LEFT:
+						jc.setLeft(true);
+						break;
                 
-            case KeyEvent.VK_RIGHT:
-            	for(JoueurCooperatif jc: joueurs)
-            		jc.setRight(true);
-                break;
+					case KeyEvent.VK_RIGHT:
+						jc.setRight(true);
+						break;
                 
-            case KeyEvent.VK_SPACE:
-            	for(JoueurCooperatif jc: joueurs)
-            		jc.setJump(true);
-            	break;
-            case KeyEvent.VK_ESCAPE:
-            	paused = !paused;
-            	break;
-
+					case KeyEvent.VK_SPACE:
+						jc.setJump(true);
+						break;
+					case KeyEvent.VK_ESCAPE:
+						paused = !paused;
+						break;
+					}
+				}
 			}
 		}
 		
@@ -259,22 +261,24 @@ public class Cooperatif extends Mode implements Modemethods{
 	@Override
 	public void keyReleased(KeyEvent e) {
 		if(!gameOver) {
-			switch(e.getKeyCode()){
-            case KeyEvent.VK_LEFT: 
-            	for(JoueurCooperatif jc: joueurs)
-            		jc.setLeft(false);
-                break;
-                
-            case KeyEvent.VK_RIGHT:  
-            	for(JoueurCooperatif jc: joueurs)
-            		jc.setRight(false);
-                break;
-                
-            case KeyEvent.VK_SPACE:
-            	for(JoueurCooperatif jc: joueurs)
-            		jc.setJump(false);
-                break;
+			for(JoueurCooperatif jc: joueurs) {
+				if(jc.estJoueurLocal()) {
+					switch(e.getKeyCode()){
+		            case KeyEvent.VK_LEFT: 
+		            		jc.setLeft(false);
+		                break;
+		                
+		            case KeyEvent.VK_RIGHT:  
+		            		jc.setRight(false);
+		                break;
+		                
+		            case KeyEvent.VK_SPACE:
+		            		jc.setJump(false);
+		                break;
+					}
+				}
 			}
+			
 		}
 		
 	}

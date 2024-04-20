@@ -10,6 +10,8 @@ import javax.swing.JOptionPane;
 import Network.ClientJoueur;
 import Network.ServeurCentral;
 import Network.packets.Packet00Login;
+import entities.Joueur;
+import entities.JoueurCooperatif;
 import main.Game;
 import modesjeu.Modejeu;
 import ui.MenuButton;
@@ -83,16 +85,38 @@ public class Menu extends state implements Statemethods {
 				if(mb.isMousePressed())
 					mb.applyGamestate();
 				if(mb.getState() == Gamestate.PLAYING) {
-					if(Modejeu.mode == Modejeu.COOPERATIF) {
+					// M O D E      S O L O
+					if(Modejeu.mode == Modejeu.SOLO) {
+						String name = JOptionPane.showInputDialog(game, "Entrez votre nom");
+						Joueur joueur = new Joueur(200, 175, (int)(64 * Game.SCALE), (int)(40* Game.SCALE),name, game.getPlaying());
+				    	joueur.loadLvlData(game.getPlaying().getLevelManager().getCurrentLevel().getLevelData());
+				    	game.getPlaying().ajoutEntity(joueur);
+				    	game.setRunning(true);
+					}
+					
+					// M O D E    C O O P E R A T I F
+					else if(Modejeu.mode == Modejeu.COOPERATIF) {
 						if(JOptionPane.showConfirmDialog(game.getGamePanel(), "veux tu commencer le serveur ?") == 0) {
-							game.setServeurSocket(new ServeurCentral(game));
-							game.getServeurSocket().start();
+								game.setServeurSocket(new ServeurCentral(game));
+								game.getServeurSocket().start();
+							
 						}
 						game.setJoueurSocket(new ClientJoueur(game, "localhost"));
 						game.getJoueurSocket().start();
-						game.setRunning(true);
-						//game.getJoueurSocket().envoieData("ping".getBytes());	
-						Packet00Login loginPacket = new Packet00Login(JOptionPane.showInputDialog(game, "Entre vontre nom"));
+						//game.setRunning(true);
+				
+						JoueurCooperatif joueur =  new JoueurCooperatif(200, 175, (int)(64 * Game.SCALE), (int)(40* Game.SCALE),
+																		JOptionPane.showInputDialog(game, "Entre vontre nom"),game.getPlaying(),
+																		null, -1);
+						joueur.loadLvlData(game.getPlaying().getLevelManager().getCurrentLevel().getLevelData());
+						joueur.setJoueurLocal(true);
+						game.getPlaying().ajoutEntity(joueur);
+						
+						Packet00Login loginPacket = new Packet00Login(joueur.getUsername());
+						
+						if(game.getServeurSocket() != null) {
+							game.getServeurSocket().ajoutConnexion(joueur, loginPacket);
+						}
 						loginPacket.writeData(game.getJoueurSocket());
 					}
 					game.getAudioManager().setSonNiveau(game.getPlaying().getLevelManager().getLevelIndex());

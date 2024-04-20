@@ -96,7 +96,6 @@ public class Game implements Runnable {
 			if(running) {
 				playing.update();
 			}
-			
 			break;
 		case OPTIONS:	
 			optsJeu.update();
@@ -117,6 +116,7 @@ public class Game implements Runnable {
  			menu.draw(g);
  			break;
  		case PLAYING:
+ 			if(running)
 				playing.draw(g);
  			break;
  		case OPTIONS:

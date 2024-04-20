@@ -70,10 +70,6 @@ public class Joueur extends Entity{
 	private Playing playing;
 	
 	private boolean mort = false;
-	
-	//TODO : ADD A USER NAME
-	
-    
     
     public Joueur(float x, float y, int width, int height,String username, Playing playing){
         super(x, y, width, height);

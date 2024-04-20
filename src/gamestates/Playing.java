@@ -51,9 +51,20 @@ public class Playing extends state implements Statemethods {
 	 
 
 		private void initClasses() {
-      	    solo = new Solo(game, this);
-      	    cooperatif = new Cooperatif(game, this);
-      	    combat = new Combat(game, this);       
+			/*switch(Modejeu.mode) {
+			case SOLO:
+				solo = new Solo(game, this);
+				break;
+			case COOPERATIF:
+				cooperatif = new Cooperatif(game, this);
+				break;
+			case COMBAT:
+				combat = new Combat(game, this);    
+				break;
+			}*/
+			solo = new Solo(game, this);
+			cooperatif = new Cooperatif(game, this);
+			combat = new Combat(game, this);
 	    }
 		
 		public void loadNextLevel() {
@@ -274,6 +285,9 @@ public class Playing extends state implements Statemethods {
 		
 		public synchronized void ajoutEntity(Entity entity) {
 			switch (Modejeu.mode){
+			case SOLO:
+				solo.setJoueur((Joueur)entity);
+				break;
 			case COOPERATIF:
 				cooperatif.ajoutJoueur((JoueurCooperatif)entity);
 				break;

@@ -7,6 +7,7 @@ import java.awt.geom.Rectangle2D;
 
 import gamestates.Playing;
 import main.Game;
+import modesjeu.Modejeu;
 import objets.Porte;
 
 import static utils.Constantes.Directions.*;
@@ -31,7 +32,7 @@ public abstract class Enemy extends Entity {
 		this.typeEnemy = enemyType;
 		maxVie = GetMaxHealth(enemyType);
 		vie = maxVie;
-		vitesseMarche = 0.35f * Game.SCALE;;
+		vitesseMarche = 0.35f * Game.SCALE;
 		nbInter = 0;
 	}
 	
@@ -74,6 +75,9 @@ public abstract class Enemy extends Entity {
 	 
 	protected void move(int[][] lvlData) {
 		 float xSpeed = 0;
+		 /*if(Modejeu.mode == Modejeu.COOPERATIF || Modejeu.mode == Modejeu.COMBAT) {
+			 vitesseMarche = 0.175f * Game.SCALE;
+		 }*/
 	 		
 	 		if(walkDir == LEFT) {
 	 			xSpeed = -vitesseMarche;

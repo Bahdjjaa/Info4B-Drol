@@ -2,10 +2,12 @@ package modesjeu;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Random;
 
 import Niveaux.LevelManager;
 import entities.EnemyManager;
+import entities.Entity;
 import entities.EquipageManager;
 import entities.Joueur;
 import gamestates.Playing;
@@ -28,6 +30,7 @@ public abstract class Mode{
 	protected PauseOverlay pauseOverlay;
 	protected GameOverOverlay gameOverOverlay;
 	protected LevelCompletedOverlay levelCompletedOverlay;
+
 	      
 	protected int xLvlOffset;
 	protected int leftBorder = (int)(0.2 * Game.GAME_WIDTH);
@@ -127,4 +130,5 @@ public abstract class Mode{
 		enemyManager.enemyOut(hitBox);
 		
 	}
+	
 }
