@@ -16,6 +16,8 @@ import java.io.Serializable;
 
 import javax.imageio.ImageIO;
 
+import Network.packets.Packet02Move;
+import Network.packets.Packet03Attack;
 import gamestates.Playing;
 import main.Game;
 import utils.LoadSave;
@@ -35,6 +37,7 @@ public class Joueur extends Entity{
     private String username;
 	private BufferedImage [][] animations;
     private boolean moving = false, attacking = false;
+    private boolean estJoueurLocal;
     private boolean left, right, jump;
     private int [][] lvlData;
     private float xDrawOffset = 21 * Game.SCALE;
@@ -111,11 +114,13 @@ public class Joueur extends Entity{
     	updateAttackBox();
     	updatePos();
     	
-    	if(moving)
+    	if(moving) {
     		checkRescue(hitbox);
+    	}
     		
-    	if(attacking)
+    	if(attacking) {
     		checkAttack();
+    	}
     	
         updateAnimationTick();
         setAnimation();
@@ -127,6 +132,8 @@ public class Joueur extends Entity{
 			return;
 		attackChecked = true;
 		playing.checkEnemyHit(attackBox);
+		Packet03Attack packet = new Packet03Attack(getUsername(), attacking);
+    	packet.writeData(Game.game.getJoueurSocket());
 		
 	}
     
@@ -172,6 +179,14 @@ public class Joueur extends Entity{
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
 			g.drawString(username, nameX, nameY);
 		}
+	}
+	
+	public boolean estJoueurLocal() {
+		return estJoueurLocal;
+	}
+
+	public void setJoueurLocal(boolean estJoueurLocal) {
+		this.estJoueurLocal = estJoueurLocal;
 	}
 
 	public String getUsername() {
@@ -283,7 +298,10 @@ public class Joueur extends Entity{
     		updateXPos(xSpeed);
     	}
     	moving = true;
-    
+    	if(this.estJoueurLocal) {
+    		Packet02Move packet = new Packet02Move(this.getUsername(), this.hitbox.x, this.hitbox.y);
+        	packet.writeData(Game.game.getJoueurSocket());
+    	}
     }
     
     private void jump() {
@@ -367,6 +385,10 @@ public class Joueur extends Entity{
 	}
 	public void setJump(boolean j) {
 		this.jump = j;
+	}
+	
+	public boolean isJump() {
+		return jump;
 	}
 
 	public void resetAll() {

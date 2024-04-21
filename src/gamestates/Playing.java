@@ -97,8 +97,8 @@ public class Playing extends state implements Statemethods {
 			switch(Modejeu.mode) {
 			case SOLO:
 				return solo.getJoueur();
-			case COOPERATIF:
-				return cooperatif.getJoueur();
+			/*case COOPERATIF:
+				return cooperatif.getJoueur();*/
 			default:
 				break;
 			}

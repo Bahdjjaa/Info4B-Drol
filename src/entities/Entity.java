@@ -16,7 +16,7 @@ import main.Game;
  * @author bahdjjaa
  */
 public abstract class Entity {
-    protected float x,y;
+    public float x,y;
     protected int width, height;
     protected Rectangle2D.Float hitbox;
     protected int tick, index;

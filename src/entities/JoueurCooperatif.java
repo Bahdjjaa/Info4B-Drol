@@ -2,13 +2,14 @@ package entities;
 
 import java.net.InetAddress;
 
+import Network.ClientJoueur;
 import gamestates.Playing;
 
 public class JoueurCooperatif extends Joueur  {
 	
 	public InetAddress ip;
 	public int port;
-	private boolean estJoueurLocal;
+	//private ClientJoueur client;
 
 	public JoueurCooperatif(float x, float y, int width, int height,String username,Playing playing, InetAddress ip, int port) {
 		super(x, y, width, height,username, playing);
@@ -21,12 +22,12 @@ public class JoueurCooperatif extends Joueur  {
 		super.update();
 	}
 
-	public boolean estJoueurLocal() {
-		return estJoueurLocal;
+	/*public ClientJoueur getClient() {
+		return client;
 	}
 
-	public void setJoueurLocal(boolean estJoueurLocal) {
-		this.estJoueurLocal = estJoueurLocal;
-	}
+	public void setClient(ClientJoueur client) {
+		this.client = client;
+	}*/
 
 }

@@ -38,7 +38,7 @@ public abstract class Enemy extends Entity {
 	
 	
 	
-	protected void updateAnimationTick() {
+	protected synchronized void updateAnimationTick() {
 	        this.tick++;
 	        if(this.tick >=  VITESSE_ANIMATION){
 	            this.tick = 0; 

@@ -240,8 +240,6 @@ public class OptionsJeu extends state implements Statemethods{
 				quatreBtn.setSelected(false);
 				sixBtn.setSelected(false);
 				soloBtn.setSelected(false);
-				
-				
 			}
 		
 	}

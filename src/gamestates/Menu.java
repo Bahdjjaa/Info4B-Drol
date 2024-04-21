@@ -97,13 +97,15 @@ public class Menu extends state implements Statemethods {
 					// M O D E    C O O P E R A T I F
 					else if(Modejeu.mode == Modejeu.COOPERATIF) {
 						if(JOptionPane.showConfirmDialog(game.getGamePanel(), "veux tu commencer le serveur ?") == 0) {
+							if(game.getServeurSocket() == null) {
 								game.setServeurSocket(new ServeurCentral(game));
 								game.getServeurSocket().start();
+							}	
 							
 						}
 						game.setJoueurSocket(new ClientJoueur(game, "localhost"));
 						game.getJoueurSocket().start();
-						//game.setRunning(true);
+						game.setRunning(true);
 				
 						JoueurCooperatif joueur =  new JoueurCooperatif(200, 175, (int)(64 * Game.SCALE), (int)(40* Game.SCALE),
 																		JOptionPane.showInputDialog(game, "Entre vontre nom"),game.getPlaying(),

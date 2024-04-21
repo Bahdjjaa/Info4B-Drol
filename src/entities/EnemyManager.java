@@ -56,7 +56,7 @@ public class EnemyManager {
 		
 	}
 
-	public void update(int[][] lvlData, Joueur joueur) {
+	public synchronized void update(int[][] lvlData, Joueur joueur) {
 		for(Crabby c: crabbies)
 			if(c.isActive())
 				c.update(lvlData, joueur);

@@ -26,14 +26,13 @@ public class Crabby extends Enemy{
 		initAttackBox();
 	}
 	
-	 public void update(int[][] lvlData, Joueur joueur) {
-		 updateBehaviour(lvlData, joueur);
-		 updateAnimationTick();
-		 updateAttackBox();
-		 
+	 public synchronized void update(int[][] lvlData, Joueur joueur) {
+			 updateBehaviour(lvlData, joueur);
+			 updateAnimationTick();
+			 updateAttackBox();
 	 }
 	
-	 private void updateAttackBox() {
+	 private synchronized void updateAttackBox() {
 		attackBox.x = hitbox.x - attackBoxOffsetX;
 		attackBox.y = hitbox.y;
 		
@@ -46,7 +45,7 @@ public class Crabby extends Enemy{
 	}
 	
 	//Previously named updateMove
-	private void updateBehaviour(int[][] lvlData, Joueur joueur) {
+	private synchronized void updateBehaviour(int[][] lvlData, Joueur joueur) {
 		 if(firstUpdate) 
 			 firstUpdateCheck(lvlData);
 			

@@ -17,6 +17,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import Network.packets.Packet;
 import Network.packets.Packet.PacketTypes;
 import Network.packets.Packet00Login;
+import Network.packets.Packet02Move;
+import Network.packets.Packet03Attack;
 import entities.JoueurCooperatif;
 import main.Game;
 
@@ -56,19 +58,40 @@ public class ServeurCentral extends Thread{
 			}
 		}
 		
+		public JoueurCooperatif getJoueurCooperatif(String username) {
+			for(JoueurCooperatif jc : joueursConnectes) {
+				if(jc.getUsername().equals(username))
+					return jc;
+			}
+			return null;
+		}
+		
+		public int getJoueurCooperatifIndex(String username) {
+			int index = 0;
+			for(JoueurCooperatif jc : joueursConnectes) {
+				if(jc.getUsername().equals(username))
+					break;
+				index++;
+			}
+			return index;
+			
+		}
+		
 		@Override
 	    public void run() {
-			System.out.println("En attent des autres joueurs pour se connecter ...");
+			System.out.println("En attent de joueurs pour se connecter ...");
 	        
-	            while (joueursConnectes.size() < nbJoueurs) {
+	            while (!ready) {
 	                byte[] data = new byte[1024];
 	                DatagramPacket packet = new DatagramPacket(data, data.length);
 	                try {
 	                	socket.receive(packet);
+	    	            this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
+	            
 	                }catch (IOException e) {
 	                    e.printStackTrace();
 	                }
-	                this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
+	                //this.parsePacket(packet.getData(), packet.getAddress(), packet.getPort());
 	                /*
 	                String message  = new String(packet.getData());
 	                if(message.trim().equalsIgnoreCase("ping"))
@@ -76,11 +99,25 @@ public class ServeurCentral extends Thread{
 	                	envoieData("pong".getBytes(), packet.getAddress(),packet.getPort());
 	                	*/
 	            }
-	            ready = true;  // Set ready when all players are connected
-	            game.setRunning(ready);
-	            System.out.println("All players connected. Starting game...");
-	            envoieDataToJoueurs("Game Start".getBytes()); // Notify all players to start
+	            startGame();
+	            
 	    }
+
+		private void startGame() {
+			ready = true;  // Set ready when all players are connected
+            game.setRunning(ready);
+            System.out.println("All players connected. Starting game...");
+	        envoieDataToJoueurs("Game Start".getBytes()); // Notify all players to start
+           
+			
+		}
+
+
+		private void sendGameFullMessage(InetAddress address, int port) {
+			String msg = "Jeu complet \nJouer en mode solo";
+			envoieData(msg.getBytes(), address, port);
+		}
+
 
 		private void parsePacket(byte[] data, InetAddress address, int port) {
 			String message =  new String(data).trim();
@@ -91,18 +128,59 @@ public class ServeurCentral extends Thread{
 			case INVLIDE:
 				break;
 			case LOGIN:
-				packet = new Packet00Login(data);
-				System.out.println("["+address.getHostAddress()+":"+port+"] "+((Packet00Login)packet).getUserName()+ " est connecté...");
-				JoueurCooperatif joueur = new JoueurCooperatif(200, 175, (int)(64 * Game.SCALE), (int)(40* Game.SCALE), ((Packet00Login)packet).getUserName(), game.getPlaying(), address, port);
-				joueur.loadLvlData(game.getPlaying().getLevelManager().getCurrentLevel().getLevelData());
-				joueur.setJoueurLocal(false);
-				ajoutConnexion(joueur,(Packet00Login)packet);
+				if(!ready) {
+					if(joueursConnectes.size() < nbJoueurs) {
+						packet = new Packet00Login(data);
+						System.out.println("["+address.getHostAddress()+":"+port+"] "+((Packet00Login)packet).getUserName()+ " est connecté...");
+						JoueurCooperatif joueur = new JoueurCooperatif(200, 175, (int)(64 * Game.SCALE), (int)(40* Game.SCALE), ((Packet00Login)packet).getUserName(), game.getPlaying(), address, port);
+						joueur.loadLvlData(game.getPlaying().getLevelManager().getCurrentLevel().getLevelData());
+						joueur.setJoueurLocal(false);
+						ajoutConnexion(joueur,(Packet00Login)packet);
+					}else {
+						sendGameFullMessage(address, port);
+					}
+				}
+				
 				break;
 			case DISCONNECT:
+				break;
+				
+			case MOVE:
+				 packet = new Packet02Move(data);
+				 System.out.println(((Packet02Move)packet).getUserName()+" a bougé vers"
+						 			+((Packet02Move)packet).getX() +","+((Packet02Move)packet).getY());
+				 this.GererLesMouvements((Packet02Move)packet);
+				break;
+				
+			case ATTACK:
+				packet  = new Packet03Attack(data);
+				System.out.println(((Packet03Attack)packet).getUserName()+" attaque");
+				this.GererLesAttaques((Packet03Attack)packet);
 				break;
 			}
 			
 		}
+
+		private void GererLesAttaques(Packet03Attack packet) {
+			if(getJoueurCooperatif(packet.getUserName()) != null) {
+				int index = getJoueurCooperatifIndex(packet.getUserName());
+				this.joueursConnectes.get(index).setAttack(packet.getAttack());
+				packet.writeData(this);
+			}
+			
+		}
+
+
+		private void GererLesMouvements(Packet02Move packet) {
+			if(getJoueurCooperatif(packet.getUserName()) != null) {
+				int index = getJoueurCooperatifIndex(packet.getUserName());
+				this.joueursConnectes.get(index).getHitbox().x = packet.getX();
+				this.joueursConnectes.get(index).getHitbox().y = packet.getY();
+				packet.writeData(this);
+				}
+			
+		}
+
 
 		public void ajoutConnexion(JoueurCooperatif joueur, Packet00Login packet) {
 			boolean dejaConnecte = false;
@@ -125,7 +203,21 @@ public class ServeurCentral extends Thread{
 				this.joueursConnectes.add(joueur);
 				//packet.writeData(this); YOU SON  OF B :(
 			}
+			/*if(joueursConnectes.size() == nbJoueurs) {
+				startGameForAllPlayers();
+			}*/
 		}
+
+		/*private void startGameForAllPlayers() {
+			for(JoueurCooperatif jc : joueursConnectes) {
+				if(!jc.estJoueurLocal())
+					jc.getClient().getGame().setRunning(true);
+			}
+			 System.out.println("All players connected. Starting game...");
+	         envoieDataToJoueurs("Game Start".getBytes()); // Notify all players to start
+			
+		}*/
+
 
 		public void envoieDataToJoueurs(byte[] data) {
 			for(JoueurCooperatif jc: joueursConnectes) {
