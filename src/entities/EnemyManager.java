@@ -74,13 +74,14 @@ public class EnemyManager {
 			}
 	}
 	
-	public void enemyHit(Rectangle2D.Float attackBox) {
+	public boolean enemyHit(Rectangle2D.Float attackBox) {
 		for(Crabby c : crabbies)
 			if(c.isActive())
 			 if(attackBox.intersects(c.getHitbox())) { //Made a change here
 				c.hurt(10);
-				return;
+				return true;
 			 }
+		return false;
 	}
 	
 	public void enemyOut(Rectangle2D.Float hitBox) {

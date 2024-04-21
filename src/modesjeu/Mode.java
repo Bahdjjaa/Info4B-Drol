@@ -118,12 +118,12 @@ public abstract class Mode{
 		this.gameOver= gameOver;
 	}
 	
-	public void checkEnemyHit(Rectangle2D.Float attackBox) {
-		enemyManager.enemyHit(attackBox);
+	public boolean checkEnemyHit(Rectangle2D.Float attackBox) {
+		return enemyManager.enemyHit(attackBox);
 	}
 	
-	public void checkMemberRescue(Rectangle2D.Float hitbox) {
-		equipageManager.isRescued(hitbox);
+	public boolean checkMemberRescue(Rectangle2D.Float hitbox) {
+		return equipageManager.isRescued(hitbox);
 	}
 	
 	public void checkPorteTouche(Rectangle2D.Float hitBox) {

@@ -22,12 +22,4 @@ public class JoueurCooperatif extends Joueur  {
 		super.update();
 	}
 
-	/*public ClientJoueur getClient() {
-		return client;
-	}
-
-	public void setClient(ClientJoueur client) {
-		this.client = client;
-	}*/
-
 }

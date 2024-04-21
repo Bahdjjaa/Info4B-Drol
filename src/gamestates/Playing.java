@@ -217,29 +217,25 @@ public class Playing extends state implements Statemethods {
 			}
 		}
 		
-		public void checkEnemyHit(Rectangle2D.Float attackBox) {
+		public boolean checkEnemyHit(Rectangle2D.Float attackBox) {
 			switch(Modejeu.mode) {
 			case SOLO:
-				solo.checkEnemyHit(attackBox);
-				break;
+				return solo.checkEnemyHit(attackBox);
 			case COOPERATIF:
-				cooperatif.checkEnemyHit(attackBox);
-				break;
+				return cooperatif.checkEnemyHit(attackBox);
 			default:
-				break;
+				return false;
 			}
 		}
 		
-		public void checkMemberRescue(Rectangle2D.Float hitbox) {
+		public boolean checkMemberRescue(Rectangle2D.Float hitbox) {
 			switch(Modejeu.mode) {
 			case SOLO:
-				solo.checkMemberRescue(hitbox);
-				break;
+				return solo.checkMemberRescue(hitbox);
 			case COOPERATIF:
-				cooperatif.checkMemberRescue(hitbox);
-				break;
+				return cooperatif.checkMemberRescue(hitbox);
 			default:
-				break;
+				return false;
 			}
 		}
 		
@@ -428,7 +424,6 @@ public class Playing extends state implements Statemethods {
 			
 		}
 
-	
 		
 		
 

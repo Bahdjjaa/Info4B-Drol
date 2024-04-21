@@ -7,6 +7,7 @@ import Network.packets.Packet00Login;
 import Network.packets.Packet02Move;
 import Network.packets.Packet03Attack;
 import Network.packets.Packet04Direction;
+import Network.packets.Packet05Score;
 import Network.packets.Packet.PacketTypes;
 import entities.JoueurCooperatif;
 import main.Game;
@@ -82,12 +83,8 @@ public class ClientJoueur extends Thread{
 				return;
 			}	
 			packet = new Packet00Login(data);
-			System.out.println("["+address.getHostAddress()+":"+port+"] "+((Packet00Login)packet).getUserName()+ " a rejoint le jeu...");
-			JoueurCooperatif joueur = new JoueurCooperatif(200, 175, (int)(64 * Game.SCALE), (int)(40* Game.SCALE), ((Packet00Login)packet).getUserName(), game.getPlaying(), address, port);
-			joueur.loadLvlData(game.getPlaying().getLevelManager().getCurrentLevel().getLevelData());
-			//Ajouter le joueur au jeu
-			//joueur.setClient(this);
-			game.getPlaying().ajoutEntity(joueur);
+			GererLesConnexions((Packet00Login)packet, address, port);
+			
 			break;
 		case DISCONNECT:
 			break;
@@ -104,9 +101,29 @@ public class ClientJoueur extends Thread{
 			System.out.println("Jumping or moving left or right");
 			this.GererLesDirections((Packet04Direction)packet);
 			break;
+		case SCORE:
+			packet = new Packet05Score(data);
+			System.out.println(((Packet05Score)packet).getUserName() + " a incrimenté son score à "+((Packet05Score)packet).getScore());
+			this.GererLesScores((Packet05Score)packet);
+			break;
 		}
 		
 	}
+	
+	private void GererLesScores(Packet05Score packet) {
+		Mode mode = this.game.getPlaying().getModejeu();
+		if(mode instanceof Cooperatif) {
+			((Cooperatif)mode).setScore(packet.getUserName(), packet.getScore());
+		}
+	}
+
+	private void GererLesConnexions(Packet00Login packet, InetAddress address, int port) {
+		System.out.println("["+address.getHostAddress()+":"+port+"] "+packet.getUserName()+ " a rejoint le jeu...");
+		JoueurCooperatif joueur = new JoueurCooperatif(packet.getX(), packet.getY(), (int)(64 * Game.SCALE), (int)(40* Game.SCALE),packet.getUserName(), game.getPlaying(), address, port);
+		joueur.loadLvlData(game.getPlaying().getLevelManager().getCurrentLevel().getLevelData());
+		game.getPlaying().ajoutEntity(joueur);
+	}
+
 
 	private void GererLesDirections(Packet04Direction packet) {
 		Mode mode = this.game.getPlaying().getModejeu();
@@ -115,7 +132,7 @@ public class ClientJoueur extends Thread{
 		}
 		
 	}
-
+	
 	private void GererLesAttaques(Packet03Attack packet) {
 		Mode mode = this.game.getPlaying().getModejeu();
 		if(mode instanceof Cooperatif) {

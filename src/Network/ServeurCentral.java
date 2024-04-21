@@ -20,6 +20,7 @@ import Network.packets.Packet00Login;
 import Network.packets.Packet02Move;
 import Network.packets.Packet03Attack;
 import Network.packets.Packet04Direction;
+import Network.packets.Packet05Score;
 import entities.JoueurCooperatif;
 import main.Game;
 
@@ -163,9 +164,24 @@ public class ServeurCentral extends Thread{
 				System.out.println("Jumping or moving left or right");
 				this.GererLesDirections((Packet04Direction)packet);
 				break;
+			case SCORE:
+				packet = new Packet05Score(data);
+				System.out.println(((Packet05Score)packet).getUserName() + " a incrimenté son score à "+((Packet05Score)packet).getScore());
+				this.GererLesScores((Packet05Score)packet);
+				break;
 			}
 			
 		}
+
+		private void GererLesScores(Packet05Score packet) {
+			if(getJoueurCooperatif(packet.getUserName()) != null) {
+				int index = getJoueurCooperatifIndex(packet.getUserName());
+				this.joueursConnectes.get(index).setScore(packet.getScore());
+				packet.writeData(this);
+			}
+			
+		}
+
 
 		private void GererLesDirections(Packet04Direction packet) {
 			if(getJoueurCooperatif(packet.getUserName()) != null) {
@@ -213,7 +229,7 @@ public class ServeurCentral extends Thread{
 					dejaConnecte = true;
 				}else {
 					envoieData(packet.getData(), jc.ip, jc.port);
-					packet = new Packet00Login(jc.getUsername());
+					packet = new Packet00Login(jc.getUsername(), jc.getHitbox().x, jc.getHitbox().y);
 					envoieData(packet.getData(), joueur.ip, joueur.port);
 				}	
 			}

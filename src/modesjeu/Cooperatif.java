@@ -16,7 +16,9 @@ import javax.swing.JOptionPane;
 
 import Network.ClientJoueur;
 import Network.ServeurCentral;
+import Network.packets.Packet03Attack;
 import Network.packets.Packet04Direction;
+import Network.packets.Packet05Score;
 import entities.Joueur;
 import entities.JoueurCooperatif;
 import gamestates.Playing;
@@ -71,6 +73,12 @@ public class Cooperatif extends Mode implements Modemethods{
 	public synchronized void setJoueurEnAttaque(String username, boolean attack) {
 		int index = getJoueurIndex(username);
 		this.joueurs.get(index).setAttack(attack);
+	}
+	
+	public synchronized void setScore(String username, int score) {
+		int index = getJoueurIndex(username);
+		this.joueurs.get(index).setScore(score);
+		
 	}
 	
 	
@@ -203,9 +211,14 @@ public class Cooperatif extends Mode implements Modemethods{
 	public void mouseClicked(MouseEvent e) {
 		if(!gameOver) {
 			if(e.getButton() == MouseEvent.BUTTON1)
-				for(JoueurCooperatif jc: joueurs)
-					if(jc.estJoueurLocal())
+				for(JoueurCooperatif jc: joueurs) {
+					if(jc.estJoueurLocal()) {
 						jc.setAttack(true);
+						Packet03Attack packet = new Packet03Attack(jc.getUsername(), jc.isAttacking());
+			        	packet.writeData(Game.game.getJoueurSocket());
+			       
+					}
+				}
 		}
 		
 	}
@@ -330,35 +343,5 @@ public class Cooperatif extends Mode implements Modemethods{
 			if(jc.estJoueurLocal())
 				jc.setMort(mort);
 	}
-
-
-
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		
 }

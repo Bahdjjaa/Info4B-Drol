@@ -5,7 +5,7 @@ import Network.ServeurCentral;
 
 public abstract class Packet {
 	public static enum PacketTypes{
-		INVLIDE(-1), LOGIN(00), DISCONNECT(01), MOVE(02), ATTACK(03), DIRECTION(04);
+		INVLIDE(-1), LOGIN(00), DISCONNECT(01), MOVE(02), ATTACK(03), DIRECTION(04), SCORE(05);
 		
 		private int packetId;
 		

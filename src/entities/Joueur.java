@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 import Network.packets.Packet02Move;
 import Network.packets.Packet03Attack;
 import Network.packets.Packet04Direction;
+import Network.packets.Packet05Score;
 import gamestates.Playing;
 import main.Game;
 import utils.LoadSave;
@@ -38,6 +39,7 @@ public class Joueur extends Entity{
     private String username;
 	private BufferedImage [][] animations;
     private boolean moving = false, attacking = false;
+    private int score;
     private boolean estJoueurLocal;
     private boolean left, right, jump;
     private int [][] lvlData;
@@ -81,6 +83,7 @@ public class Joueur extends Entity{
         this.etat = IDLE;
         this.maxVie = 100;
         this.vie = maxVie;
+        this.setScore(0);
         this.vitesseMarche = 1.0f * Game.SCALE;
         this.username = username;
         this.loadAnimations();
@@ -121,6 +124,7 @@ public class Joueur extends Entity{
     		
     	if(attacking) {
     		checkAttack();
+
     	}
     	
         updateAnimationTick();
@@ -132,14 +136,30 @@ public class Joueur extends Entity{
 		if(attackChecked || index != 1)
 			return;
 		attackChecked = true;
-		playing.checkEnemyHit(attackBox);
-		Packet03Attack packet = new Packet03Attack(getUsername(), attacking);
-    	packet.writeData(Game.game.getJoueurSocket());
+		boolean hit = playing.checkEnemyHit(attackBox);	
+		if(hit) {
+			score += 10;
+			envoieScore();
+		}
+		
 		
 	}
     
-    public void checkRescue(Rectangle2D.Float hitbox) {
-		playing.checkMemberRescue(hitbox);
+    private void envoieScore() {
+    	 if (this.estJoueurLocal) {  // Vérifiez si c'est le joueur local qui doit envoyer le score
+    	        Packet05Score packet = new Packet05Score(this.getUsername(), this.score);
+    	        packet.writeData(Game.game.getJoueurSocket());  // Envoie le paquet au serveur
+    	    }
+		
+	}
+
+
+	public void checkRescue(Rectangle2D.Float hitbox) {
+		boolean rescued = playing.checkMemberRescue(hitbox);
+		if(rescued) {
+			score += 15;
+			envoieScore();
+		}
 	}
 
 
@@ -174,12 +194,21 @@ public class Joueur extends Entity{
 		g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
 		
 		if(username != null) {
-			int nameX = (int)(this.hitbox.x - xDrawOffset - (username.length()*3.5) + width /2);
-			int nameY = (int)(this.hitbox.y - yDrawOffset - 20);
+			int nameX = (int)(this.getHitbox().x - xDrawOffset - (username.length()*3.5) + width /2);
+			int nameY = (int)(this.getHitbox().y - yDrawOffset - 20);
 			g.setColor(Color.WHITE);
 			g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
 			g.drawString(username, nameX, nameY);
 		}
+		
+		int scoreX = statusBarY + statusBarWidth;
+		int scoreY = statusBarY +  statusBarHeight/2;
+		
+		g.setColor(Color.WHITE);
+		g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 19));
+		g.drawString(""+score, scoreX, scoreY);
+		
+		
 	}
 	
 	public boolean estJoueurLocal() {
@@ -391,6 +420,10 @@ public class Joueur extends Entity{
 	public boolean isJump() {
 		return jump;
 	}
+	
+	public boolean isAttacking() {
+		return attacking;
+	}
 
 	public void resetAll() {
 		resetDirBooleans();
@@ -415,6 +448,16 @@ public class Joueur extends Entity{
 
 	public void setMort(boolean mort) {
 		this.mort = mort;
+	}
+
+
+	public int getScore() {
+		return score;
+	}
+
+
+	public void setScore(int score) {
+		this.score = score;
 	}
 
 }

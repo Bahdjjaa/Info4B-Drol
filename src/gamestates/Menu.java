@@ -114,7 +114,7 @@ public class Menu extends state implements Statemethods {
 						joueur.setJoueurLocal(true);
 						game.getPlaying().ajoutEntity(joueur);
 						
-						Packet00Login loginPacket = new Packet00Login(joueur.getUsername());
+						Packet00Login loginPacket = new Packet00Login(joueur.getUsername(), joueur.x, joueur.y);
 						
 						if(game.getServeurSocket() != null) {
 							game.getServeurSocket().ajoutConnexion(joueur, loginPacket);

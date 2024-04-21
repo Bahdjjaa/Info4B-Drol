@@ -68,12 +68,12 @@ public class EquipageManager {
 		drawFrogs(g, xLvlOffset); 
 	}
 	
-	public void isRescued(Rectangle2D.Float hitBox){
+	public boolean isRescued(Rectangle2D.Float hitBox){
 		for(Roi r : rois) {
 			if(r.isActive())
 				if(r.hitbox.intersects(hitBox)) {
 					r.setActive(false);
-					return;
+					return true;
 				}
 		}
 		
@@ -81,9 +81,10 @@ public class EquipageManager {
 			if(f.isActive())
 				if(hitBox.intersects(f.hitbox)) {
 					f.setActive(false);
-					return;
+					return true;
 				}
 		}
+		return false;
 		
 		
 	}
