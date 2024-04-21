@@ -18,6 +18,7 @@ import javax.imageio.ImageIO;
 
 import Network.packets.Packet02Move;
 import Network.packets.Packet03Attack;
+import Network.packets.Packet04Direction;
 import gamestates.Playing;
 import main.Game;
 import utils.LoadSave;

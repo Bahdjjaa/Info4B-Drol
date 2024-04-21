@@ -25,7 +25,7 @@ public class Packet04Direction extends Packet{
 	}
 	@Override
 	public byte[] getData() {
-		return ("02"+ this.username+","+this.left+","+this.right+","+this.jump).getBytes();
+		return ("04"+ this.username+","+this.left+","+this.right+","+this.jump).getBytes();
 	}
 
 	@Override
@@ -51,6 +51,9 @@ public class Packet04Direction extends Packet{
 	
 	public boolean isJump() {
 		return jump;
+	}
+	public String getUserName() {
+		return username;
 	}
 	
 }

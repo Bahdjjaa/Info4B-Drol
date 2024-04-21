@@ -35,7 +35,6 @@ public class Packet00Login extends Packet {
 	}
 
 	public String getUserName() {
-		// TODO Auto-generated method stub
 		return username;
 	}
 	

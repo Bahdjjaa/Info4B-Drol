@@ -19,6 +19,7 @@ import Network.packets.Packet.PacketTypes;
 import Network.packets.Packet00Login;
 import Network.packets.Packet02Move;
 import Network.packets.Packet03Attack;
+import Network.packets.Packet04Direction;
 import entities.JoueurCooperatif;
 import main.Game;
 
@@ -157,9 +158,26 @@ public class ServeurCentral extends Thread{
 				System.out.println(((Packet03Attack)packet).getUserName()+" attaque");
 				this.GererLesAttaques((Packet03Attack)packet);
 				break;
+			case DIRECTION:
+				packet = new Packet04Direction(data);
+				System.out.println("Jumping or moving left or right");
+				this.GererLesDirections((Packet04Direction)packet);
+				break;
 			}
 			
 		}
+
+		private void GererLesDirections(Packet04Direction packet) {
+			if(getJoueurCooperatif(packet.getUserName()) != null) {
+				int index = getJoueurCooperatifIndex(packet.getUserName());
+				this.joueursConnectes.get(index).setLeft(packet.isLeft());
+				this.joueursConnectes.get(index).setRight(packet.isRight());
+				this.joueursConnectes.get(index).setJump(packet.isJump());
+				packet.writeData(this);
+			}
+			
+		}
+
 
 		private void GererLesAttaques(Packet03Attack packet) {
 			if(getJoueurCooperatif(packet.getUserName()) != null) {

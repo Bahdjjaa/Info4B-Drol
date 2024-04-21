@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 
 import Network.ClientJoueur;
 import Network.ServeurCentral;
+import Network.packets.Packet04Direction;
 import entities.Joueur;
 import entities.JoueurCooperatif;
 import gamestates.Playing;
@@ -28,15 +29,8 @@ public class Cooperatif extends Mode implements Modemethods{
     
     public Cooperatif(Game game, Playing playing) {
 		super(game, playing);
-		//initClasses();
 	}
 
-
-
-	/*private void initClasses() {
-		this.joueur = new Joueur(200, 175, (int)(64 * Game.SCALE), (int)(40* Game.SCALE),JOptionPane.showInputDialog(game, "Entrer votre nom"), playing);
-		this.joueur.loadLvlData(this.levelManager.getCurrentLevel().getLevelData());
-	}*/
 	
 	public synchronized ArrayList<JoueurCooperatif> getJoueurs(){
 		return joueurs;
@@ -63,6 +57,15 @@ public class Cooperatif extends Mode implements Modemethods{
 		joueur.getHitbox().x = x;
 		joueur.getHitbox().y = y;
 	   
+	}
+	
+	public synchronized void setDirection(String username, boolean left, boolean right, boolean jump) {
+			int index = getJoueurIndex(username);
+			JoueurCooperatif joueur = this.joueurs.get(index);
+			joueur.setLeft(left);
+			joueur.setRight(right);
+			joueur.setJump(jump);
+		
 	}
 	
 	public synchronized void setJoueurEnAttaque(String username, boolean attack) {
@@ -256,23 +259,32 @@ public class Cooperatif extends Mode implements Modemethods{
 			gameOverOverlay.keyPressed(e);
 		else {
 			for(JoueurCooperatif jc: joueurs) {
+				boolean envoieData = false;
 				if(jc.estJoueurLocal()) {
 					switch(e.getKeyCode()){
 			
 					case KeyEvent.VK_LEFT:
 						jc.setLeft(true);
+						envoieData = true;
 						break;
                 
 					case KeyEvent.VK_RIGHT:
 						jc.setRight(true);
+						envoieData = true;
 						break;
                 
 					case KeyEvent.VK_SPACE:
 						jc.setJump(true);
+						envoieData = true;
 						break;
 					case KeyEvent.VK_ESCAPE:
 						paused = !paused;
 						break;
+					}
+					if(envoieData) {
+						Packet04Direction packet = new Packet04Direction(jc.getUsername(), jc.isLeft(), jc.isRight(), jc.isJump());
+			        	packet.writeData(Game.game.getJoueurSocket());
+			    		
 					}
 				}
 			}
@@ -285,18 +297,27 @@ public class Cooperatif extends Mode implements Modemethods{
 	public void keyReleased(KeyEvent e) {
 		if(!gameOver) {
 			for(JoueurCooperatif jc: joueurs) {
+				boolean envoieData = false;
 					switch(e.getKeyCode()){
 		            case KeyEvent.VK_LEFT: 
 		            		jc.setLeft(false);
+		            		envoieData = true;
 		                break;
 		                
 		            case KeyEvent.VK_RIGHT:  
 		            		jc.setRight(false);
+		            		envoieData = true;
 		                break;
 		                
 		            case KeyEvent.VK_SPACE:
 		            		jc.setJump(false);
+		            		envoieData = true;
 		                break;
+					}
+					
+					if(envoieData) {
+						Packet04Direction packet = new Packet04Direction(jc.getUsername(), jc.isLeft(), jc.isRight(), jc.isJump());
+			        	packet.writeData(Game.game.getJoueurSocket());
 					}
 			}
 			
@@ -309,6 +330,8 @@ public class Cooperatif extends Mode implements Modemethods{
 			if(jc.estJoueurLocal())
 				jc.setMort(mort);
 	}
+
+
 
 
 	

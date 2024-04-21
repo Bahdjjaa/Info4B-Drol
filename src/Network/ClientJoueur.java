@@ -6,12 +6,13 @@ import Network.packets.Packet;
 import Network.packets.Packet00Login;
 import Network.packets.Packet02Move;
 import Network.packets.Packet03Attack;
+import Network.packets.Packet04Direction;
 import Network.packets.Packet.PacketTypes;
 import entities.JoueurCooperatif;
 import main.Game;
 import modesjeu.Cooperatif;
 import modesjeu.Mode;
-import modesjeu.Modejeu;
+
 
 public class ClientJoueur extends Thread{
 
@@ -97,6 +98,20 @@ public class ClientJoueur extends Thread{
 		case ATTACK:
 			packet = new Packet03Attack(data);
 			this.GererLesAttaques((Packet03Attack)packet);
+			break;
+		case DIRECTION:
+			packet = new Packet04Direction(data);
+			System.out.println("Jumping or moving left or right");
+			this.GererLesDirections((Packet04Direction)packet);
+			break;
+		}
+		
+	}
+
+	private void GererLesDirections(Packet04Direction packet) {
+		Mode mode = this.game.getPlaying().getModejeu();
+		if(mode instanceof Cooperatif) {
+			((Cooperatif)mode).setDirection(packet.getUserName(), packet.isLeft(), packet.isRight(), packet.isJump());
 		}
 		
 	}
